@@ -7,9 +7,16 @@ export function createDebugSystem(layer: PhaserLayer) {
         },
     } = layer;
 
+    const SCREEN_WIDTH = window.innerWidth;
+
     // Log FPS
     (() => {
-        const fpsText = phaserScene.add.text(10, 10, "FPS: 0");
+        const text = "FPS: 000";
+        const fpsText = phaserScene.add.text(
+            SCREEN_WIDTH - 80,
+            10,
+            text
+        );
         fpsText.setScrollFactor(0);
         phaserScene.time.addEvent({
             delay: 1000, // Log every second
@@ -24,10 +31,7 @@ export function createDebugSystem(layer: PhaserLayer) {
     })();
 
     // Load images
-    phaserScene.load.image(
-        "spawn_button",
-        "/assets/buttons/spawn_button.png"
-    );
+    phaserScene.load.image("spawn_button", "/assets/buttons/spawn_button.png");
 
     phaserScene.load.once("complete", () => {
         /// Button: Init A Player
@@ -35,8 +39,8 @@ export function createDebugSystem(layer: PhaserLayer) {
             const buttonImage = phaserScene.add.image(0, 0, "spawn_button");
             const scaleValue = 3;
             buttonImage.setScale(scaleValue);
-            const width = buttonImage.width * scaleValue;
-            buttonImage.setPosition(width, 20 + width);
+            const width = SCREEN_WIDTH - buttonImage.width * scaleValue;
+            buttonImage.setPosition(width, 70);
             buttonImage.setScrollFactor(0);
 
             buttonImage.setInteractive({

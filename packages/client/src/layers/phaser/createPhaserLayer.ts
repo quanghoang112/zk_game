@@ -1,5 +1,5 @@
 import { createPhaserEngine } from "@latticexyz/phaserx";
-import { Entity, namespaceWorld } from "@latticexyz/recs";
+import { namespaceWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../network/createNetworkLayer";
 import { registerSystems } from "./systems";
 
@@ -39,9 +39,8 @@ export const createPhaserLayer = async (
                 console.log("Default focusCameraOnEntity(), entity: ", entity);
             },
         },
-        player: scenes.Main.objectPool.get("0xC0FFE" as Entity, "Sprite") as ExtendedPlayer,
+        player: undefined as ExtendedPlayer | undefined,
     };
-    custom.player.despawn();
 
     const layer = {
         networkLayer,
