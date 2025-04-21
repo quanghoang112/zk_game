@@ -19,13 +19,14 @@ const getRandomInt = (min: number, max: number): number => {
     );
 };
 
+const offsetX = TILE_WIDTH / 2;
+const offsetY = TILE_HEIGHT / 2;
+
 export function createPlayerSystem(layer: PhaserLayer) {
     const {
         world,
         networkLayer: {
-            components: {
-                Position,
-            },
+            components: { Position },
             systemCalls: { spawn, move },
         },
         scenes: {
@@ -75,12 +76,11 @@ export function createPlayerSystem(layer: PhaserLayer) {
         }
     });
 
+    type ExtendedPlayer = Exclude<typeof layer.custom.player, undefined>;
+
     defineEnterSystem(world, [Has(Position)], ({ entity }) => {
         console.log("Player Enter System, entity: ", entity);
-        const playerObj = objectPool.get(
-            entity,
-            "Sprite"
-        ) as typeof layer.custom.player;
+        const playerObj = objectPool.get(entity, "Sprite") as ExtendedPlayer;
 
         // Get position
         const position = getComponentValueStrict(Position, entity);
@@ -89,11 +89,14 @@ export function createPlayerSystem(layer: PhaserLayer) {
             TILE_WIDTH,
             TILE_HEIGHT
         );
+        pixelPosition.x += offsetX;
+        pixelPosition.y += offsetY;
 
         // Draw the space ship
         playerObj.setComponent({
             id: "sprite",
             once: (sprite) => {
+                sprite.setOrigin(0.5, 0.5);
                 sprite.setTexture(
                     config.sprites[Sprites.SpaceShip].assetKey,
                     config.sprites[Sprites.SpaceShip].frame
@@ -120,8 +123,8 @@ export function createPlayerSystem(layer: PhaserLayer) {
 
     defineUpdateSystem(world, [Has(Position)], ({ entity }) => {
         const playerObj = isThePlayer(entity, layer)
-            ? layer.custom.player
-            : (objectPool.get(entity, "Sprite") as typeof layer.custom.player);
+            ? (layer.custom.player as ExtendedPlayer)
+            : (objectPool.get(entity, "Sprite") as ExtendedPlayer);
 
         // Get position
         const position = getComponentValueStrict(Position, entity);
@@ -130,11 +133,29 @@ export function createPlayerSystem(layer: PhaserLayer) {
             TILE_WIDTH,
             TILE_HEIGHT
         );
+        pixelPosition.x += offsetX;
+        pixelPosition.y += offsetY;
+
+        // Calculate rotation value based on movement direction
+        const dx = pixelPosition.x - playerObj.position.x;
+        const dy = pixelPosition.y - playerObj.position.y;
+
+        let rotationVal = 0;
+        if (dx === 0 && dy > 0) {
+            rotationVal = Math.PI; // Down
+        } else if (dx > 0 && dy === 0) {
+            rotationVal = Math.PI / 2; // Right
+        } else if (dx === 0 && dy < 0) {
+            rotationVal = 0; // Up
+        } else if (dx < 0 && dy === 0) {
+            rotationVal = (Math.PI * 3) / 2; // Left
+        }
 
         // Correct the position
         playerObj.setComponent({
             id: "position",
             once: (sprite) => {
+                sprite.setRotation(rotationVal);
                 sprite.setPosition(pixelPosition.x, pixelPosition.y);
             },
         });
@@ -143,11 +164,5 @@ export function createPlayerSystem(layer: PhaserLayer) {
             playerObj.x = playerObj.position.x;
             playerObj.y = playerObj.position.y;
         }
-
-        const chunkSize = TILE_WIDTH * 64;
-        console.log(`Entity position: ${pixelPosition.x}, ${pixelPosition.y}`);
-        console.log(
-            `Chunk: ${Math.floor(pixelPosition.x / chunkSize)}, ${Math.floor(pixelPosition.y / chunkSize)}`
-        );
     });
 }
