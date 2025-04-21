@@ -1,0 +1,31 @@
+export enum Scenes {
+  Main = "Main",
+}
+
+export enum Maps {
+  Main = "Main",
+}
+
+export enum Animations {
+  RotatingPlanet = "RotatingPlanet",
+}
+export enum Sprites {
+  SpaceShip,
+}
+
+export enum Assets {
+  MainAtlas = "MainAtlas",
+  Tileset = "Tileset",
+}
+
+export enum Direction {
+  Unknown,
+  Up,
+  Right,
+  Down,
+  Left
+}
+
+
+export const TILE_HEIGHT = 64;
+export const TILE_WIDTH = 64;
