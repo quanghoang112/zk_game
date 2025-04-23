@@ -7,7 +7,7 @@ import { Direction } from "../layers/phaser/constants";
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
-    { playerEntity, worldContract, waitForTransaction }: SetupNetworkResult
+    { worldContract, waitForTransaction }: SetupNetworkResult
     // { Position, Stats }: ClientComponents,
 ) {
     const spawn = async (x: number, y: number) => {
@@ -16,7 +16,6 @@ export function createSystemCalls(
     };
 
     const move = async (dir: Direction) => {
-        console.log("moving player: ", playerEntity);
         const tx = await worldContract.write.app__move([dir]);
         await waitForTransaction(tx);
     };

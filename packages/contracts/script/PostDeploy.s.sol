@@ -18,6 +18,10 @@ contract PostDeploy is Script {
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
 
+    // Config map
+    bytes32 rdSeed = keccak256(abi.encodePacked("random seed"));
+    IWorld(worldAddress).app__createMapConfig(32, 32, rdSeed);
+
     // Stop broadcasting transactions from the deployer account
     vm.stopBroadcast();
   }

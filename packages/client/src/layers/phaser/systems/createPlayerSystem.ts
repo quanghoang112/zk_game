@@ -1,9 +1,15 @@
 import { PhaserLayer } from "../createPhaserLayer";
-import { TILE_WIDTH, TILE_HEIGHT, Sprites, Direction } from "../constants";
+import {
+    TILE_WIDTH,
+    TILE_HEIGHT,
+    Sprites,
+    Direction,
+    MAP_CONFIG,
+} from "../constants";
 import { isThePlayer } from "../utils";
 import {
-    pixelCoordToTileCoord,
     tileCoordToPixelCoord,
+    pixelToChunkCoord,
 } from "@latticexyz/phaserx";
 import {
     Has,
@@ -41,13 +47,11 @@ export function createPlayerSystem(layer: PhaserLayer) {
 
     // Custom Method to init a new player
     layer.custom.methods.initPlayer = async () => {
-        const window_width = window.innerWidth;
-        const window_height = window.innerHeight;
-
         // Get random position
-        const x = getRandomInt(window_width / 2, (window_width * 3) / 4);
-        const y = getRandomInt(window_height / 2, (window_height * 3) / 4);
-        const pos = pixelCoordToTileCoord({ x, y }, TILE_WIDTH, TILE_HEIGHT);
+        const pos = {
+            x: getRandomInt(0, MAP_CONFIG.WIDTH_TILE),
+            y: getRandomInt(0, MAP_CONFIG.HEIGHT_TILE),
+        };
 
         try {
             await spawn(pos.x, pos.y);
@@ -64,7 +68,7 @@ export function createPlayerSystem(layer: PhaserLayer) {
             else if (key.keyCode == 38) dir = Direction.Down;
             else if (key.keyCode == 39) dir = Direction.Right;
             else if (key.keyCode == 40) dir = Direction.Up;
-            else console.log(`keycode: ${key.keyCode}`);
+            // else console.log(`keycode: ${key.keyCode}`);
         }
 
         if (dir !== Direction.Unknown) {
@@ -101,6 +105,7 @@ export function createPlayerSystem(layer: PhaserLayer) {
                     config.sprites[Sprites.SpaceShip].assetKey,
                     config.sprites[Sprites.SpaceShip].frame
                 );
+                sprite.setDepth(1);
             },
         });
 
@@ -150,6 +155,9 @@ export function createPlayerSystem(layer: PhaserLayer) {
         } else if (dx < 0 && dy === 0) {
             rotationVal = (Math.PI * 3) / 2; // Left
         }
+
+        const visibleChunks = pixelToChunkCoord(pixelPosition, 64 * 32);
+        console.log(visibleChunks);
 
         // Correct the position
         playerObj.setComponent({

@@ -1,9 +1,13 @@
 import { PhaserLayer } from "../createPhaserLayer";
+// import { getChunksInArea, loadChunks } from "@latticexyz/phaserx";
 
 export function createDebugSystem(layer: PhaserLayer) {
     const {
         scenes: {
-            Main: { phaserScene },
+            Main: {
+                phaserScene,
+                // camera,
+            },
         },
     } = layer;
 

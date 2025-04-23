@@ -24,8 +24,8 @@ export default defineWorld({
     },
     MapConfig: {
       schema: {
-        width: "uint32",
-        height: "uint32",
+        widthTiles: "uint32",
+        heightTiles: "uint32",
         seed: "bytes32",
       },
       key: [],

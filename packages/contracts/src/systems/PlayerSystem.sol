@@ -2,15 +2,16 @@
 pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Position, PositionData, Stats, StatsData } from "../codegen/index.sol";
+import { Position, PositionData, Stats, StatsData, MapConfig, MapConfigData } from "../codegen/index.sol";
 import { Direction } from "../codegen/common.sol";
 import { addressToEntity } from "../Utils.sol";
 import { console } from "forge-std/console.sol";
 
 contract PlayerSystem is System {
   function spawn(int32 x, int32 y) public {
-    // Prevent to spawn at {0, 0}
-    if (x == 0 && y == 0) return;
+    // Prevent to spawn outside of the map
+    MapConfigData memory mapConf = MapConfig.get();
+    if (x < 0 || uint32(x) >= mapConf.widthTiles || y < 0 || uint32(y) >= mapConf.heightTiles) return;
 
     bytes32 _id = addressToEntity(_msgSender());
 
@@ -40,8 +41,12 @@ contract PlayerSystem is System {
     else if (moveDir == Direction.Down) _new_pos.y--;
     else if (moveDir == Direction.Left) _new_pos.x--;
 
-    // Avoid {0, 0} position
-    if (_new_pos.x == 0 && _new_pos.y == 0) return;
+    // Prevent the player to move outside the map
+    MapConfigData memory mapConf = MapConfig.get();
+    if (
+      (_new_pos.x < 0 || uint32(_new_pos.x) >= mapConf.widthTiles) ||
+      (_new_pos.y < 0 || uint32(_new_pos.y) >= mapConf.heightTiles)
+    ) return;
 
     // Moving
     Stats.setEnergy(_id, _energy - 1);

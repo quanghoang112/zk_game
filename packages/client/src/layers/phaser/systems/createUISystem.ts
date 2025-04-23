@@ -77,6 +77,7 @@ export function createUISystem(layer: PhaserLayer) {
         energyStat,
     ]);
     uiContainer.setScrollFactor(0);
+    uiContainer.setDepth(2);
 
     // Update energy
     const updateEnergy = (entity: Entity) => {

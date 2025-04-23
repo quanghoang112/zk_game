@@ -2,6 +2,7 @@ import { createPhaserEngine } from "@latticexyz/phaserx";
 import { namespaceWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../network/createNetworkLayer";
 import { registerSystems } from "./systems";
+import { MAP_CONFIG, TILE_WIDTH, TILE_HEIGHT } from "./constants";
 
 export type PhaserLayer = Awaited<ReturnType<typeof createPhaserLayer>>;
 type PhaserEngineConfig = Parameters<typeof createPhaserEngine>[0];
@@ -21,11 +22,10 @@ export const createPhaserLayer = async (
 
     const { camera } = scenes.Main;
 
-    camera.phaserCamera.setBounds(0, 0, 3000, 3000);
-
     const components = {};
 
-    interface ExtendedPlayer extends ReturnType<typeof scenes.Main.objectPool.get<"Sprite">> {
+    interface ExtendedPlayer
+        extends ReturnType<typeof scenes.Main.objectPool.get<"Sprite">> {
         x: number;
         y: number;
     }
@@ -52,6 +52,13 @@ export const createPhaserLayer = async (
     };
 
     registerSystems(layer);
+
+    camera.phaserCamera.setBounds(
+        0,
+        0,
+        MAP_CONFIG.WIDTH_TILE * TILE_WIDTH,
+        MAP_CONFIG.HEIGHT_TILE * TILE_HEIGHT
+    );
 
     return layer;
 };
