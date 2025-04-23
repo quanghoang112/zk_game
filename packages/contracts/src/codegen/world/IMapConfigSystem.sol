@@ -9,5 +9,5 @@ pragma solidity >=0.8.24;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IMapConfigSystem {
-  function app__createMapConfig(uint32 width, uint32 height, bytes32 seed) external;
+  function app__createMapConfig(uint8 width, uint8 height, bytes32 seed) external;
 }

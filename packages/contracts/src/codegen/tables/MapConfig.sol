@@ -17,8 +17,8 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct MapConfigData {
-  uint32 widthTiles;
-  uint32 heightTiles;
+  uint8 widthTiles;
+  uint8 heightTiles;
   bytes32 seed;
 }
 
@@ -27,12 +27,12 @@ library MapConfig {
   ResourceId constant _tableId = ResourceId.wrap(0x746261707000000000000000000000004d6170436f6e66696700000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0028030004042000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0022030001012000000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of ()
   Schema constant _keySchema = Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (uint32, uint32, bytes32)
-  Schema constant _valueSchema = Schema.wrap(0x0028030003035f00000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint8, uint8, bytes32)
+  Schema constant _valueSchema = Schema.wrap(0x0022030000005f00000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -70,27 +70,27 @@ library MapConfig {
   /**
    * @notice Get widthTiles.
    */
-  function getWidthTiles() internal view returns (uint32 widthTiles) {
+  function getWidthTiles() internal view returns (uint8 widthTiles) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (uint8(bytes1(_blob)));
   }
 
   /**
    * @notice Get widthTiles.
    */
-  function _getWidthTiles() internal view returns (uint32 widthTiles) {
+  function _getWidthTiles() internal view returns (uint8 widthTiles) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (uint8(bytes1(_blob)));
   }
 
   /**
    * @notice Set widthTiles.
    */
-  function setWidthTiles(uint32 widthTiles) internal {
+  function setWidthTiles(uint8 widthTiles) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((widthTiles)), _fieldLayout);
@@ -99,7 +99,7 @@ library MapConfig {
   /**
    * @notice Set widthTiles.
    */
-  function _setWidthTiles(uint32 widthTiles) internal {
+  function _setWidthTiles(uint8 widthTiles) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((widthTiles)), _fieldLayout);
@@ -108,27 +108,27 @@ library MapConfig {
   /**
    * @notice Get heightTiles.
    */
-  function getHeightTiles() internal view returns (uint32 heightTiles) {
+  function getHeightTiles() internal view returns (uint8 heightTiles) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (uint8(bytes1(_blob)));
   }
 
   /**
    * @notice Get heightTiles.
    */
-  function _getHeightTiles() internal view returns (uint32 heightTiles) {
+  function _getHeightTiles() internal view returns (uint8 heightTiles) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (uint8(bytes1(_blob)));
   }
 
   /**
    * @notice Set heightTiles.
    */
-  function setHeightTiles(uint32 heightTiles) internal {
+  function setHeightTiles(uint8 heightTiles) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((heightTiles)), _fieldLayout);
@@ -137,7 +137,7 @@ library MapConfig {
   /**
    * @notice Set heightTiles.
    */
-  function _setHeightTiles(uint32 heightTiles) internal {
+  function _setHeightTiles(uint8 heightTiles) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((heightTiles)), _fieldLayout);
@@ -212,7 +212,7 @@ library MapConfig {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(uint32 widthTiles, uint32 heightTiles, bytes32 seed) internal {
+  function set(uint8 widthTiles, uint8 heightTiles, bytes32 seed) internal {
     bytes memory _staticData = encodeStatic(widthTiles, heightTiles, seed);
 
     EncodedLengths _encodedLengths;
@@ -226,7 +226,7 @@ library MapConfig {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(uint32 widthTiles, uint32 heightTiles, bytes32 seed) internal {
+  function _set(uint8 widthTiles, uint8 heightTiles, bytes32 seed) internal {
     bytes memory _staticData = encodeStatic(widthTiles, heightTiles, seed);
 
     EncodedLengths _encodedLengths;
@@ -268,14 +268,12 @@ library MapConfig {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(
-    bytes memory _blob
-  ) internal pure returns (uint32 widthTiles, uint32 heightTiles, bytes32 seed) {
-    widthTiles = (uint32(Bytes.getBytes4(_blob, 0)));
+  function decodeStatic(bytes memory _blob) internal pure returns (uint8 widthTiles, uint8 heightTiles, bytes32 seed) {
+    widthTiles = (uint8(Bytes.getBytes1(_blob, 0)));
 
-    heightTiles = (uint32(Bytes.getBytes4(_blob, 4)));
+    heightTiles = (uint8(Bytes.getBytes1(_blob, 1)));
 
-    seed = (Bytes.getBytes32(_blob, 8));
+    seed = (Bytes.getBytes32(_blob, 2));
   }
 
   /**
@@ -314,7 +312,7 @@ library MapConfig {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(uint32 widthTiles, uint32 heightTiles, bytes32 seed) internal pure returns (bytes memory) {
+  function encodeStatic(uint8 widthTiles, uint8 heightTiles, bytes32 seed) internal pure returns (bytes memory) {
     return abi.encodePacked(widthTiles, heightTiles, seed);
   }
 
@@ -325,8 +323,8 @@ library MapConfig {
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(
-    uint32 widthTiles,
-    uint32 heightTiles,
+    uint8 widthTiles,
+    uint8 heightTiles,
     bytes32 seed
   ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(widthTiles, heightTiles, seed);

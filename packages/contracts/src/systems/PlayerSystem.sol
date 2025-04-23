@@ -5,16 +5,21 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { Position, PositionData, Stats, StatsData, MapConfig, MapConfigData } from "../codegen/index.sol";
 import { Direction } from "../codegen/common.sol";
 import { addressToEntity } from "../Utils.sol";
-import { console } from "forge-std/console.sol";
 
 contract PlayerSystem is System {
-  function spawn(int32 x, int32 y) public {
-    // Prevent to spawn outside of the map
+  // `_isValidPosition` returns true if {x, y} is inside of the map
+  function _isValidPosition(uint32 x, uint32 y) internal view returns (bool) {
     MapConfigData memory mapConf = MapConfig.get();
-    if (x < 0 || uint32(x) >= mapConf.widthTiles || y < 0 || uint32(y) >= mapConf.heightTiles) return;
+    return x >= 0 && x < mapConf.widthTiles && y >= 0 && y < mapConf.heightTiles;
+  }
 
+  // `spawn` initializes a new player in the game by storing his position in the blockchain
+  function spawn(uint32 x, uint32 y) public {
+    // Ensure the spawn position is valid
+    require(_isValidPosition(x, y));
+
+    // Check if the player exists
     bytes32 _id = addressToEntity(_msgSender());
-
     PositionData memory posData = Position.get(_id);
 
     // If the player doesn't exist
@@ -24,7 +29,7 @@ contract PlayerSystem is System {
     }
   }
 
-  // Move only 1 step at a time
+  // `move` updates the player's position based on the direction, if the move is valid.
   function move(Direction moveDir) public {
     bytes32 _id = addressToEntity(_msgSender());
 

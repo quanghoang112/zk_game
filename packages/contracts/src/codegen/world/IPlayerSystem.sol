@@ -11,7 +11,7 @@ import { Direction } from "../common.sol";
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IPlayerSystem {
-  function app__spawn(int32 x, int32 y) external;
+  function app__spawn(uint32 x, uint32 y) external;
 
   function app__move(Direction moveDir) external;
 }

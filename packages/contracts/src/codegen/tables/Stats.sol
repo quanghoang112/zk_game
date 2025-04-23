@@ -17,7 +17,7 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct StatsData {
-  uint32 health;
+  uint16 health;
   uint32 energy;
 }
 
@@ -26,12 +26,12 @@ library Stats {
   ResourceId constant _tableId = ResourceId.wrap(0x7462617070000000000000000000000053746174730000000000000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0008020004040000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0006020002040000000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (uint32, uint32)
-  Schema constant _valueSchema = Schema.wrap(0x0008020003030000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint16, uint32)
+  Schema constant _valueSchema = Schema.wrap(0x0006020001030000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -69,29 +69,29 @@ library Stats {
   /**
    * @notice Get health.
    */
-  function getHealth(bytes32 id) internal view returns (uint32 health) {
+  function getHealth(bytes32 id) internal view returns (uint16 health) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (uint16(bytes2(_blob)));
   }
 
   /**
    * @notice Get health.
    */
-  function _getHealth(bytes32 id) internal view returns (uint32 health) {
+  function _getHealth(bytes32 id) internal view returns (uint16 health) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (uint16(bytes2(_blob)));
   }
 
   /**
    * @notice Set health.
    */
-  function setHealth(bytes32 id, uint32 health) internal {
+  function setHealth(bytes32 id, uint16 health) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
@@ -101,7 +101,7 @@ library Stats {
   /**
    * @notice Set health.
    */
-  function _setHealth(bytes32 id, uint32 health) internal {
+  function _setHealth(bytes32 id, uint16 health) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
@@ -183,7 +183,7 @@ library Stats {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes32 id, uint32 health, uint32 energy) internal {
+  function set(bytes32 id, uint16 health, uint32 energy) internal {
     bytes memory _staticData = encodeStatic(health, energy);
 
     EncodedLengths _encodedLengths;
@@ -198,7 +198,7 @@ library Stats {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes32 id, uint32 health, uint32 energy) internal {
+  function _set(bytes32 id, uint16 health, uint32 energy) internal {
     bytes memory _staticData = encodeStatic(health, energy);
 
     EncodedLengths _encodedLengths;
@@ -243,10 +243,10 @@ library Stats {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (uint32 health, uint32 energy) {
-    health = (uint32(Bytes.getBytes4(_blob, 0)));
+  function decodeStatic(bytes memory _blob) internal pure returns (uint16 health, uint32 energy) {
+    health = (uint16(Bytes.getBytes2(_blob, 0)));
 
-    energy = (uint32(Bytes.getBytes4(_blob, 4)));
+    energy = (uint32(Bytes.getBytes4(_blob, 2)));
   }
 
   /**
@@ -287,7 +287,7 @@ library Stats {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(uint32 health, uint32 energy) internal pure returns (bytes memory) {
+  function encodeStatic(uint16 health, uint32 energy) internal pure returns (bytes memory) {
     return abi.encodePacked(health, energy);
   }
 
@@ -297,7 +297,7 @@ library Stats {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(uint32 health, uint32 energy) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
+  function encode(uint16 health, uint32 energy) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(health, energy);
 
     EncodedLengths _encodedLengths;
