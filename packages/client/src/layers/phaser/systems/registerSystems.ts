@@ -3,9 +3,11 @@ import { createPlayerSystem } from "./createPlayerSystem";
 import { createDebugSystem } from "./createDebugSystem";
 import { createUISystem } from "./createUISystem";
 import { createMapSystem } from "./createMapSystem";
+import { createPlanetSystem } from "./createPlanetSystem";
 
 export const registerSystems = (layer: PhaserLayer) => {
     createMapSystem(layer);
+    createPlanetSystem(layer);
     createDebugSystem(layer);
     createPlayerSystem(layer);
     createUISystem(layer);
