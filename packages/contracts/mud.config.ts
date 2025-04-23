@@ -9,26 +9,34 @@ export default defineWorld({
     Position: {
       schema: {
         id: "bytes32",
-        x: "int32",
-        y: "int32",
+        x: "uint32",
+        y: "uint32",
       },
       key: ["id"],
     },
     Stats: {
       schema: {
         id: "bytes32",
-        health: "uint32",
+        health: "uint16",
         energy: "uint32",
       },
       key: ["id"],
     },
     MapConfig: {
       schema: {
-        widthTiles: "uint32",
-        heightTiles: "uint32",
+        widthTiles: "uint8",
+        heightTiles: "uint8",
         seed: "bytes32",
       },
       key: [],
-    }
+    },
+    Planet: {
+      schema: {
+        id: "bytes32",
+        radius: "uint8",
+        power: "uint8",
+      },
+      key: ["id"],
+    },
   },
 });
