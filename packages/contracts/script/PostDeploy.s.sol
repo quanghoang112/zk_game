@@ -22,6 +22,12 @@ contract PostDeploy is Script {
     bytes32 rdSeed = keccak256(abi.encodePacked("random seed"));
     IWorld(worldAddress).app__createMapConfig(32, 32, rdSeed);
 
+    // Create a default planet called "The Void"
+    uint8 salt = 0;
+    uint8 radius = 5;
+    uint8 power = 10;
+    IWorld(worldAddress).app__createPlanet(salt, radius, power);
+
     // Stop broadcasting transactions from the deployer account
     vm.stopBroadcast();
   }
