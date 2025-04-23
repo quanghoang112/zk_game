@@ -24,9 +24,9 @@ contract PostDeploy is Script {
 
     // Create a default planet called "The Void"
     uint8 salt = 0;
-    uint8 radius = 5;
+    uint32 radius = 200;
     uint8 power = 10;
-    IWorld(worldAddress).app__createPlanet(salt, radius, power);
+    IWorld(worldAddress).app__createPlanet(salt, 5, 5, radius, power);
 
     // Stop broadcasting transactions from the deployer account
     vm.stopBroadcast();

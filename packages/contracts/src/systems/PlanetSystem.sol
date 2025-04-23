@@ -15,10 +15,10 @@ contract PlanetSystem is System {
         return (data.radius != 0 || data.power != 0);
     }
 
-    function createPlanet(uint8 salt, uint8 radius, uint8 power) public {
+    function createPlanet(uint8 salt, uint32 x, uint32 y, uint32 radius, uint8 power) public {
         bytes32 id = _getPlanetID(_msgSender(), salt);
         require(!_isExisted(id));
 
-        Planet.set(id, radius, power);
+        Planet.set(id, x, y, radius, power);
     }
 }

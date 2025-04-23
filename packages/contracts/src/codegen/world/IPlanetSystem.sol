@@ -9,5 +9,5 @@ pragma solidity >=0.8.24;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IPlanetSystem {
-  function app__createPlanet(uint8 salt, uint8 radius, uint8 power) external;
+  function app__createPlanet(uint8 salt, uint32 x, uint32 y, uint32 radius, uint8 power) external;
 }

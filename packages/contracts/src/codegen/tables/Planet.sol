@@ -17,7 +17,9 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 struct PlanetData {
-  uint8 radius;
+  uint32 x;
+  uint32 y;
+  uint32 radius;
   uint8 power;
 }
 
@@ -26,12 +28,12 @@ library Planet {
   ResourceId constant _tableId = ResourceId.wrap(0x74626170700000000000000000000000506c616e657400000000000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0002020001010000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x000d040004040401000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (uint8, uint8)
-  Schema constant _valueSchema = Schema.wrap(0x0002020000000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint32, uint32, uint32, uint8)
+  Schema constant _valueSchema = Schema.wrap(0x000d040003030300000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -47,9 +49,11 @@ library Planet {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](2);
-    fieldNames[0] = "radius";
-    fieldNames[1] = "power";
+    fieldNames = new string[](4);
+    fieldNames[0] = "x";
+    fieldNames[1] = "y";
+    fieldNames[2] = "radius";
+    fieldNames[3] = "power";
   }
 
   /**
@@ -67,45 +71,129 @@ library Planet {
   }
 
   /**
-   * @notice Get radius.
+   * @notice Get x.
    */
-  function getRadius(bytes32 id) internal view returns (uint8 radius) {
+  function getX(bytes32 id) internal view returns (uint32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint8(bytes1(_blob)));
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get x.
+   */
+  function _getX(bytes32 id) internal view returns (uint32 x) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = id;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Set x.
+   */
+  function setX(bytes32 id, uint32 x) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = id;
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set x.
+   */
+  function _setX(bytes32 id, uint32 x) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = id;
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((x)), _fieldLayout);
+  }
+
+  /**
+   * @notice Get y.
+   */
+  function getY(bytes32 id) internal view returns (uint32 y) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = id;
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get y.
+   */
+  function _getY(bytes32 id) internal view returns (uint32 y) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = id;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Set y.
+   */
+  function setY(bytes32 id, uint32 y) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = id;
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((y)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set y.
+   */
+  function _setY(bytes32 id, uint32 y) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = id;
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((y)), _fieldLayout);
   }
 
   /**
    * @notice Get radius.
    */
-  function _getRadius(bytes32 id) internal view returns (uint8 radius) {
+  function getRadius(bytes32 id) internal view returns (uint32 radius) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint8(bytes1(_blob)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /**
+   * @notice Get radius.
+   */
+  function _getRadius(bytes32 id) internal view returns (uint32 radius) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = id;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (uint32(bytes4(_blob)));
   }
 
   /**
    * @notice Set radius.
    */
-  function setRadius(bytes32 id, uint8 radius) internal {
+  function setRadius(bytes32 id, uint32 radius) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((radius)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((radius)), _fieldLayout);
   }
 
   /**
    * @notice Set radius.
    */
-  function _setRadius(bytes32 id, uint8 radius) internal {
+  function _setRadius(bytes32 id, uint32 radius) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((radius)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((radius)), _fieldLayout);
   }
 
   /**
@@ -115,7 +203,7 @@ library Planet {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
     return (uint8(bytes1(_blob)));
   }
 
@@ -126,7 +214,7 @@ library Planet {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
     return (uint8(bytes1(_blob)));
   }
 
@@ -137,7 +225,7 @@ library Planet {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((power)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((power)), _fieldLayout);
   }
 
   /**
@@ -147,7 +235,7 @@ library Planet {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = id;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((power)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((power)), _fieldLayout);
   }
 
   /**
@@ -183,8 +271,8 @@ library Planet {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes32 id, uint8 radius, uint8 power) internal {
-    bytes memory _staticData = encodeStatic(radius, power);
+  function set(bytes32 id, uint32 x, uint32 y, uint32 radius, uint8 power) internal {
+    bytes memory _staticData = encodeStatic(x, y, radius, power);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -198,8 +286,8 @@ library Planet {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes32 id, uint8 radius, uint8 power) internal {
-    bytes memory _staticData = encodeStatic(radius, power);
+  function _set(bytes32 id, uint32 x, uint32 y, uint32 radius, uint8 power) internal {
+    bytes memory _staticData = encodeStatic(x, y, radius, power);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -214,7 +302,7 @@ library Planet {
    * @notice Set the full data using the data struct.
    */
   function set(bytes32 id, PlanetData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.radius, _table.power);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.radius, _table.power);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -229,7 +317,7 @@ library Planet {
    * @notice Set the full data using the data struct.
    */
   function _set(bytes32 id, PlanetData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.radius, _table.power);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.radius, _table.power);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -243,10 +331,14 @@ library Planet {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (uint8 radius, uint8 power) {
-    radius = (uint8(Bytes.getBytes1(_blob, 0)));
+  function decodeStatic(bytes memory _blob) internal pure returns (uint32 x, uint32 y, uint32 radius, uint8 power) {
+    x = (uint32(Bytes.getBytes4(_blob, 0)));
 
-    power = (uint8(Bytes.getBytes1(_blob, 1)));
+    y = (uint32(Bytes.getBytes4(_blob, 4)));
+
+    radius = (uint32(Bytes.getBytes4(_blob, 8)));
+
+    power = (uint8(Bytes.getBytes1(_blob, 12)));
   }
 
   /**
@@ -260,7 +352,7 @@ library Planet {
     EncodedLengths,
     bytes memory
   ) internal pure returns (PlanetData memory _table) {
-    (_table.radius, _table.power) = decodeStatic(_staticData);
+    (_table.x, _table.y, _table.radius, _table.power) = decodeStatic(_staticData);
   }
 
   /**
@@ -287,8 +379,8 @@ library Planet {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(uint8 radius, uint8 power) internal pure returns (bytes memory) {
-    return abi.encodePacked(radius, power);
+  function encodeStatic(uint32 x, uint32 y, uint32 radius, uint8 power) internal pure returns (bytes memory) {
+    return abi.encodePacked(x, y, radius, power);
   }
 
   /**
@@ -297,8 +389,13 @@ library Planet {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(uint8 radius, uint8 power) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(radius, power);
+  function encode(
+    uint32 x,
+    uint32 y,
+    uint32 radius,
+    uint8 power
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
+    bytes memory _staticData = encodeStatic(x, y, radius, power);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;

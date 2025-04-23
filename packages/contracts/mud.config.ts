@@ -33,7 +33,9 @@ export default defineWorld({
     Planet: {
       schema: {
         id: "bytes32",
-        radius: "uint8",
+        x: "uint32",
+        y: "uint32",
+        radius: "uint32",
         power: "uint8",
       },
       key: ["id"],
