@@ -40,5 +40,13 @@ export default defineWorld({
       },
       key: ["id"],
     },
+    Opponent: {
+      schema: {
+        id: "bytes32",
+        x: "uint32",
+        y: "uint32",
+      },
+      key: ["id"],
+    },
   },
 });

@@ -28,6 +28,9 @@ contract PostDeploy is Script {
     uint8 power = 10;
     IWorld(worldAddress).app__createPlanet(salt, 5, 5, radius, power);
 
+    // Create a opponent
+    IWorld(worldAddress).app__createOpponent(salt, 7, 7);
+
     // Stop broadcasting transactions from the deployer account
     vm.stopBroadcast();
   }

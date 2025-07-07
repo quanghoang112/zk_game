@@ -7,3 +7,4 @@ import { Position, PositionData } from "./tables/Position.sol";
 import { Stats, StatsData } from "./tables/Stats.sol";
 import { MapConfig, MapConfigData } from "./tables/MapConfig.sol";
 import { Planet, PlanetData } from "./tables/Planet.sol";
+import { Opponent, OpponentData } from "./tables/Opponent.sol";
