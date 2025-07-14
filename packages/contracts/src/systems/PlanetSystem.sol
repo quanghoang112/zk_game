@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Planet, PlanetData, Position, PositionData, Stats, StatsData, OwnedBy } from "../codegen/index.sol";
+import { Planet, PlanetData, Position, PositionData, Stats, StatsData, OwnedBy,IsDead } from "../codegen/index.sol";
 import { addressToEntity, manhattan } from "../Utils.sol";
 // import {manhattan} from "../lib/Util.sol";
 
@@ -50,7 +50,8 @@ contract PlanetSystem is System {
             else {
             Stats.setHealth(_playerId, 0);
             Stats.setEnergy(_playerId,0); // Opponent is defeated
-            Position.deleteRecord(_playerId); // Remove opponent from the game
+            // Position.deleteRecord(_playerId); // Remove opponent from the game
+            IsDead.setIsDead(_playerId, true); // Set player as dead
             }
         // Stats.setEnergy(_playerId, _PlayerStats.energy - 5); // Decrease player's energy by 5
     }

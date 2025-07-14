@@ -1,7 +1,7 @@
 import { PhaserLayer } from "../createPhaserLayer";
 import { TILE_WIDTH, TILE_HEIGHT } from "../constants";
 import { tileCoordToPixelCoord } from "@latticexyz/phaserx";
-import {createUISystem} from "./createUISystem";
+import {isThePlayer} from "../utils";
 import {
     Has,
     defineEnterSystem,
@@ -12,12 +12,6 @@ import {
     getComponentValue,
 } from "@latticexyz/recs";
 
-// function spawnImpactEffect(scene: Phaser.Scene, x: number, y: number,anim: string) {
-//   const sprite = scene.add.sprite(x, y, anim);
-//   sprite.setDepth(11);
-//   sprite.play(anim);
-//   sprite.on('animationcomplete', () => sprite.destroy());
-// }
 
 
 export function createPlanetSystem(layer: PhaserLayer) {
@@ -28,7 +22,10 @@ export function createPlanetSystem(layer: PhaserLayer) {
             systemCalls: {PlanetAttack  },
         },
         scenes: {
-            Main: { phaserScene },
+            Main: { 
+                phaserScene,
+                objectPool, 
+            },
         },
     } = layer;
 
@@ -176,7 +173,30 @@ export function createPlanetSystem(layer: PhaserLayer) {
             }
         }
         // Define the system when planet was conquered by the player
+        // defineUpdateSystem(world, [Has(OwnedBy)], ({ entity }) => {
+        //     const planet = getComponentValueStrict(Planet, entity);
+        //     if (!planet) return;
 
+        //     const localPlayerEntity = layer.networkLayer.network.playerEntity;  // ID của player local
+
+        //     const planetObj = objectPool.get(entity, "Sprite");
+
+        //     planetObj.setComponent({
+        //         id: "sprite",
+        //         once: (sprite) => {
+        //         const isOwner = planet.owner === localPlayerEntity;
+
+        //         // Chọn màu theo quyền sở hữu
+        //         const texture = isOwner ? "planet_blue" : "planet_red";  // assetKey
+        //         sprite.setTexture(texture);
+        //         sprite.setDepth(1);
+        //         sprite.setPosition(
+        //             planet.x * TILE_WIDTH + TILE_WIDTH / 2,
+        //             planet.y * TILE_HEIGHT + TILE_HEIGHT / 2
+        //         );
+        //         },
+        //     });
+        // });
 
         
         // createUISystem(layer);

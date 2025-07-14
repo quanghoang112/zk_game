@@ -14,6 +14,13 @@ export default defineWorld({
       },
       key: ["id"],
     },
+    IsDead: {
+      schema: {
+        id: "bytes32",
+        isDead: "bool",
+      },
+      key: ["id"],
+    },
     OwnedBy: {
       schema: {
         PlanetId: "bytes32",

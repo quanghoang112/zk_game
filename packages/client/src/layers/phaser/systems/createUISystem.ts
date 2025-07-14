@@ -31,7 +31,11 @@ export function createUISystem(layer: PhaserLayer) {
             systemCalls: {death},
         },
         scenes: {
-            Main: { phaserScene },
+            Main: { 
+                phaserScene,
+                objectPool, 
+
+            },
         },
     } = layer;
 
@@ -155,31 +159,21 @@ export function createUISystem(layer: PhaserLayer) {
     defineEnterSystem(world, [Has(Stats)], ({ entity }) => {
         updateEnergy(entity);
         updateHealth(entity);
+        // console.log("Entity: ");
     });
 
     defineUpdateSystem(world, [Has(Stats)], ({ entity }) => {
         updateEnergy(entity);
         updateHealth(entity);
+        
+        // for (const entity of world.entities) {
+        // const obj = objectPool.get(entity, "Sprite");
+        // const sprite = obj.id;
+        // if (obj) {
+        //     console.log(`Entity ${entity} có sprite:`, sprite);
+        // }
+        // // }
     });
 
     
-    defineUpdateSystem(world, [Has(Stats)], ({ entity }) => {
-        const stats = getComponentValue(Stats, entity);
-        if (!stats) return;
-        if (stats.health <= 0) {
-            // If energy is 0, call the death system call
-            const positionData = getComponentValueStrict(Position, entity);
-            const pixel = tileCoordToPixelCoord(positionData, TILE_WIDTH, TILE_HEIGHT);
-            pixel.x += TILE_WIDTH / 2;
-            pixel.y += TILE_HEIGHT / 2;
-            phaserScene.add
-                .image(pixel.x, pixel.y, 'flag')
-                .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
-                .setDepth(5)
-                .setScale(0.2); // Tỉ lệ của hình ảnh
-
-            death();
-        }
-
-    });
 }

@@ -8,12 +8,12 @@ import { addressToEntity,addressToEntityKey } from "../Utils.sol";
 
 contract PlayerActionSystem is System {
     function PlayerAttack(bytes32 planetId) public {
-        bytes32 playerId = addressToEntityKey(_msgSender());
+        bytes32 playerId = addressToEntity(_msgSender());
 
         PositionData memory player = Position.get(playerId);
         StatsData memory stats = Stats.get(playerId);
         require(stats.energy > 5, "not enough energy to attack");
-
+        Stats.setEnergy(playerId, stats.energy - 5); // Decrease player's energy by 5
         uint256 rand = uint256(
             keccak256(
                 abi.encode(player, player.x, player.y, blockhash(block.number - 1), block.prevrandao)
@@ -30,7 +30,7 @@ contract PlayerActionSystem is System {
         }
         else//player lose
         {
-            Stats.setEnergy(playerId, stats.energy - 5); // Decrease player's energy by 5
+            Stats.setEnergy(playerId, stats.energy - 20); // Decrease player's energy by 5
         }
     }
 }

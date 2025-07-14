@@ -36,8 +36,8 @@ export function createPlayerSystem(layer: PhaserLayer) {
     const {
         world,
         networkLayer: {
-            components: { Position,Planet,Stats },
-            systemCalls: { spawn, move,PlayerAttack },
+            components: { Position,Planet,Stats,IsDead },
+            systemCalls: { spawn, death, move,PlayerAttack },
         },
         scenes: {
             Main: {
@@ -108,6 +108,7 @@ export function createPlayerSystem(layer: PhaserLayer) {
         playerObj.setComponent({
             id: "sprite",
             once: (sprite) => {
+                sprite.setVisible(true);
                 sprite.setOrigin(0.5, 0.5);
                 sprite.setTexture(
                     config.sprites[Sprites.SpaceShip].assetKey,
@@ -133,7 +134,7 @@ export function createPlayerSystem(layer: PhaserLayer) {
             phaserCamera.startFollow(layer.custom.player, true, 0.1, 0.1);
         }
     });
-
+    //movement system
     defineUpdateSystem(world, [Has(Position)], ({ entity }) => {
         const playerObj = isThePlayer(entity, layer)
             ? (layer.custom.player as ExtendedPlayer)
@@ -156,6 +157,7 @@ export function createPlayerSystem(layer: PhaserLayer) {
         let rotationVal = 0;
         if (dx === 0 && dy > 0) {
             rotationVal = Math.PI; // Down
+            // rotationVal = 0; // Down
         } else if (dx > 0 && dy === 0) {
             rotationVal = Math.PI / 2; // Right
         } else if (dx === 0 && dy < 0) {
@@ -182,6 +184,44 @@ export function createPlayerSystem(layer: PhaserLayer) {
         }
     });
     
+
+    //Define the system when player died
+    defineUpdateSystem(world, [Has(IsDead)], ({ entity }) => {
+        const stats = getComponentValue(Stats, entity);
+        if (!stats) return;
+        // If the player is dead, call the death system
+        if (stats.health <= 0) {
+
+            // set invisible Player
+            const playerObj = isThePlayer(entity, layer)
+            ? (layer.custom.player as ExtendedPlayer)
+            : (objectPool.get(entity, "Sprite") as ExtendedPlayer);
+            playerObj.setComponent({
+                id: "sprite",
+                once: (sprite) => {
+                    sprite.setVisible(false); // Hide the player sprite
+                    // sprite.setOrigin(0.5, 0.5);
+                    // sprite.setTexture(
+                    //     config.sprites[Sprites.SpaceShip].assetKey,
+                    //     config.sprites[Sprites.SpaceShip].frame
+                    // );
+                    // sprite.setDepth(1);
+                },
+            });
+            const positionData = getComponentValueStrict(Position, entity);
+            const pixel = tileCoordToPixelCoord(positionData, TILE_WIDTH, TILE_HEIGHT);
+            pixel.x += TILE_WIDTH / 2;
+            pixel.y += TILE_HEIGHT / 2;
+            phaserScene.add
+                .image(pixel.x, pixel.y, 'flag')
+                .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+                .setDepth(5)
+                .setScale(0.2); // Tỉ lệ của hình ảnh
+
+            death();
+        }
+    });
+
     // Define when a player attacks a planet
     // defineUpdateSystem(world, [Has(Stats)], ({ entity }) => {
     input.keyboard$.subscribe(async (key: Phaser.Input.Keyboard.Key) => {

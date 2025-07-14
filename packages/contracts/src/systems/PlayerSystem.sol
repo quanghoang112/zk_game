@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Position, PositionData, Stats, StatsData, MapConfig, MapConfigData } from "../codegen/index.sol";
+import { Position, PositionData, Stats, StatsData, MapConfig, MapConfigData, IsDead } from "../codegen/index.sol";
 // import {manhattan} from "../lib/Util.sol";
 import { Direction } from "../codegen/common.sol";
 import { addressToEntity } from "../Utils.sol";
@@ -27,6 +27,7 @@ contract PlayerSystem is System {
     if (posData.x == 0 && posData.y == 0) {
       Position.set(_id, x, y);
       Stats.set(_id, 100, 100); // 0 health, 100 energy --> move 100 steps
+      IsDead.set(_id, false); // Player is not dead
     }
   }
 
@@ -36,13 +37,11 @@ contract PlayerSystem is System {
 
     // Check if the player exists
     bytes32 _id = addressToEntity(_msgSender());
-    // PositionData memory posData = Position.get(_id);
-    StatsData memory sData= Stats.get(_id);
-    if(sData.health == 0) {
-      // If the player doesn't exist
-      Position.deleteRecord(_id);
-      Stats.deleteRecord(_id);
-    }
+
+    IsDead.setIsDead(_id, true); // Set player as dead
+    Stats.deleteRecord(_id); // Set player's energy to 0
+    Position.deleteRecord(_id); // Remove player from the game
+    
   }
 
   // `move` updates the player's position based on the direction, if the move is valid.
