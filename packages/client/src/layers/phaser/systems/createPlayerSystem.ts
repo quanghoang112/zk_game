@@ -9,6 +9,7 @@ import {
 import { isThePlayer } from "../utils";
 import {
     tileCoordToPixelCoord,
+    pixelCoordToTileCoord,
     pixelToChunkCoord,
 } from "@latticexyz/phaserx";
 import {
@@ -16,6 +17,7 @@ import {
     defineEnterSystem,
     defineUpdateSystem,
     getComponentValueStrict,
+    getComponentValue,
 } from "@latticexyz/recs";
 
 const getRandomInt = (min: number, max: number): number => {
@@ -28,12 +30,14 @@ const getRandomInt = (min: number, max: number): number => {
 const offsetX = TILE_WIDTH / 2;
 const offsetY = TILE_HEIGHT / 2;
 
+
+
 export function createPlayerSystem(layer: PhaserLayer) {
     const {
         world,
         networkLayer: {
-            components: { Position },
-            systemCalls: { spawn, move },
+            components: { Position,Planet,Stats },
+            systemCalls: { spawn, move,PlayerAttack },
         },
         scenes: {
             Main: {
@@ -41,9 +45,13 @@ export function createPlayerSystem(layer: PhaserLayer) {
                 objectPool,
                 config,
                 camera: { phaserCamera },
+                phaserScene,
             },
         },
     } = layer;
+
+    //preload images
+    phaserScene.load.image("flag","./assets/death/flag.png");
 
     // Custom Method to init a new player
     layer.custom.methods.initPlayer = async () => {
@@ -173,4 +181,60 @@ export function createPlayerSystem(layer: PhaserLayer) {
             playerObj.y = playerObj.position.y;
         }
     });
+    
+    // Define when a player attacks a planet
+    // defineUpdateSystem(world, [Has(Stats)], ({ entity }) => {
+    input.keyboard$.subscribe(async (key: Phaser.Input.Keyboard.Key) => {
+        if (key.isDown && key.keyCode === 65) // 'A' key for attack
+        try {
+            // // testing
+            // const rand= Math.floor(Math.random() * 6)*10;
+            // phaserScene.add
+            // .image(200+rand, 200+rand, 'flag')
+            // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+            // .setDepth(5)
+            // .setScale(0.2); // Tỉ lệ của hình ảnh
+                defineEnterSystem(world, [Has(Stats)], ({ entity }) => {
+                    const planet = [...Planet.entities()];
+                    for (const planetId of planet) {
+                        const planetData = getComponentValueStrict(Planet, planetId);
+                        const posData = getComponentValue(Position, entity);
+                        if (!posData) continue;
+                        // if (!PlanetAttack(planet.x,planet.y,10,planet.power, playerId)) continue;
+                        // start the shooting animation and convert to pixel coordinates
+                        const planet = tileCoordToPixelCoord(
+                            { x: planetData.x, y: planetData.y },
+                            TILE_WIDTH,
+                            TILE_HEIGHT
+                        );
+
+                        // end the shooting animation and convert to pixel coordinates
+                        const player = tileCoordToPixelCoord(
+                            { x: posData.x, y: posData.y },
+                            TILE_WIDTH,
+                            TILE_HEIGHT
+                        );
+                        const dx =planetData.x > posData.x ? planetData.x - posData.x : posData.x - planetData.x;
+                        const dy = planetData.y > posData.y ? planetData.y - posData.y : posData.y - planetData.y;
+                        if (!(dx + dy  <= 15)) continue;
+                        // animate the attack
+                        const rand= Math.floor(Math.random() * 6)*10;
+                        phaserScene.add
+                        .image(200+rand, 200+rand, 'flag')
+                        .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+                        .setDepth(5)
+                        .setScale(0.2); // Tỉ lệ của hình ảnh
+                        //
+                        PlayerAttack(planetId);
+                    }
+                });
+            }
+            catch (error) {
+                console.log("Error: Cannot attack, ", error);
+            }
+
+        });
+
+    
+    
 }

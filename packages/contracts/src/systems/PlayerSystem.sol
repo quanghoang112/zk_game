@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { Position, PositionData, Stats, StatsData, MapConfig, MapConfigData } from "../codegen/index.sol";
-import {manhattan} from "../lib/Util.sol";
+// import {manhattan} from "../lib/Util.sol";
 import { Direction } from "../codegen/common.sol";
 import { addressToEntity } from "../Utils.sol";
 
@@ -26,7 +26,22 @@ contract PlayerSystem is System {
     // If the player doesn't exist
     if (posData.x == 0 && posData.y == 0) {
       Position.set(_id, x, y);
-      Stats.set(_id, 0, 100); // 0 health, 100 energy --> move 100 steps
+      Stats.set(_id, 100, 100); // 0 health, 100 energy --> move 100 steps
+    }
+  }
+
+  function death() public {
+    // Ensure the spawn position is valid
+    // require(_isValidPosition(x, y));
+
+    // Check if the player exists
+    bytes32 _id = addressToEntity(_msgSender());
+    // PositionData memory posData = Position.get(_id);
+    StatsData memory sData= Stats.get(_id);
+    if(sData.health == 0) {
+      // If the player doesn't exist
+      Position.deleteRecord(_id);
+      Stats.deleteRecord(_id);
     }
   }
 
@@ -59,31 +74,31 @@ contract PlayerSystem is System {
     Position.set(_id, _new_pos.x, _new_pos.y);
   }
 
-  function attack(bytes32 _opponentId) public {
-    bytes32 _playerId = addressToEntity(_msgSender());
-    require(!(_playerId== _opponentId), "Cannot attack yourself");
-    require(Stats.getEnergy(_playerId) >= 5, "Not enough energy to attack");
-    uint32 _distance = manhattan(
-      Position.get(_playerId),
-      Position.get(_opponentId)
-    );
-    require(_distance <= 50, "Opponent not in range");
-    // implement the attack logic here
+  // function attack(bytes32 _opponentId) public {
+  //   bytes32 _playerId = addressToEntity(_msgSender());
+  //   require(!(_playerId== _opponentId), "Cannot attack yourself");
+  //   require(Stats.getEnergy(_playerId) >= 5, "Not enough energy to attack");
+  //   uint32 _distance = manhattan(
+  //     Position.get(_playerId),
+  //     Position.get(_opponentId)
+  //   );
+  //   require(_distance <= 50, "Opponent not in range");
+  //   // implement the attack logic here
 
 
-    // Decrease the player's health
-    StatsData memory _OpponentStats = Stats.get(_opponentId);
-    StatsData memory _PlayerStats = Stats.get(_playerId);
-    if (_OpponentStats.health > 5) {
-      Stats.setHealth(_opponentId, _OpponentStats.health - 5);
-    }
-    else {
-      Stats.setHealth(_opponentId, 0);
-      Stats.setEnergy(_opponentId,0); // Opponent is defeated
-      Position.deleteRecord(_opponentId); // Remove opponent from the game
-    }
-    Stats.setEnergy(_playerId, _PlayerStats.energy - 5); // Decrease player's energy by 5
+  //   // Decrease the player's health
+  //   StatsData memory _OpponentStats = Stats.get(_opponentId);
+  //   StatsData memory _PlayerStats = Stats.get(_playerId);
+  //   if (_OpponentStats.health > 5) {
+  //     Stats.setHealth(_opponentId, _OpponentStats.health - 5);
+  //   }
+  //   else {
+  //     Stats.setHealth(_opponentId, 0);
+  //     Stats.setEnergy(_opponentId,0); // Opponent is defeated
+  //     Position.deleteRecord(_opponentId); // Remove opponent from the game
+  //   }
+  //   Stats.setEnergy(_playerId, _PlayerStats.energy - 5); // Decrease player's energy by 5
 
-    // Check if the opponent is in the same position
-  }
+  //   // Check if the opponent is in the same position
+  // }
 }

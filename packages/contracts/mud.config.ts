@@ -14,6 +14,13 @@ export default defineWorld({
       },
       key: ["id"],
     },
+    OwnedBy: {
+      schema: {
+        PlanetId: "bytes32",
+        PlayerId: "bytes32",
+      },
+      key: ["PlanetId"],
+    },
     Stats: {
       schema: {
         id: "bytes32",

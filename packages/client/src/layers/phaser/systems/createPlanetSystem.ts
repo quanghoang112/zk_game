@@ -1,19 +1,31 @@
 import { PhaserLayer } from "../createPhaserLayer";
 import { TILE_WIDTH, TILE_HEIGHT } from "../constants";
 import { tileCoordToPixelCoord } from "@latticexyz/phaserx";
+import {createUISystem} from "./createUISystem";
 import {
     Has,
     defineEnterSystem,
-    // defineUpdateSystem,
+    defineUpdateSystem,
+    defineQuery,
+    defineSystem,
     getComponentValueStrict,
+    getComponentValue,
 } from "@latticexyz/recs";
+
+// function spawnImpactEffect(scene: Phaser.Scene, x: number, y: number,anim: string) {
+//   const sprite = scene.add.sprite(x, y, anim);
+//   sprite.setDepth(11);
+//   sprite.play(anim);
+//   sprite.on('animationcomplete', () => sprite.destroy());
+// }
+
 
 export function createPlanetSystem(layer: PhaserLayer) {
     const {
         world,
         networkLayer: {
-            components: { Planet },
-            // systemCalls: {  },
+            components: { Planet,Position, OwnedBy },
+            systemCalls: {PlanetAttack  },
         },
         scenes: {
             Main: { phaserScene },
@@ -25,6 +37,9 @@ export function createPlanetSystem(layer: PhaserLayer) {
         frameWidth: 32,
         frameHeight: 48,
     });
+
+    
+
 
     // Ensure all the resources (spritesheets) is loaded
     phaserScene.load.once("complete", () => {
@@ -40,9 +55,32 @@ export function createPlanetSystem(layer: PhaserLayer) {
         });
     });
 
+    // Load the shooting spritesheet
+    phaserScene.load.spritesheet('bomb', '/assets/shooting/Bomb.png', {
+        frameWidth: 32,
+        frameHeight: 48,
+    });
+
+    // Ensure all the resources (spritesheets) is loaded
+    phaserScene.load.once("complete", () => {
+        // Define the animation
+        phaserScene.anims.create({
+            key: "planet_shooting", // Unique key for the animation
+            frames: phaserScene.anims.generateFrameNumbers("bomb", {
+                start: 0, // Start frame index
+                end: 11, // End frame index (adjust based on your spritesheet)
+            }),
+            frameRate: 15, // Frames per second
+            repeat: 0, // Repeat indefinitely (-1 for infinite loop)
+        });
+    });
+
+
     defineEnterSystem(world, [Has(Planet)], ({ entity }) => {
+        
         phaserScene.load.once("complete", () => {
             const planetData = getComponentValueStrict(Planet, entity);
+            
             const pos = tileCoordToPixelCoord(
                 { x: planetData.x, y: planetData.y },
                 TILE_WIDTH,
@@ -72,5 +110,77 @@ export function createPlanetSystem(layer: PhaserLayer) {
             // Area container
             phaserScene.add.container(pos.x, pos.y, [circle, outline]);
         });
+    });
+
+    let lastAttackTime = 0;
+    // Define the update system for attacking planets
+    defineUpdateSystem(world, [Has(Position)], ({entity}) => {
+        const now = Date.now();
+        if (now - lastAttackTime < 1000) return; // Tấn công mỗi 1 giây
+        lastAttackTime = now;
+
+        const allPlayers = [...Position.entities()];
+        for (const planetId of Planet.entities()) {
+            const planetData = getComponentValueStrict(Planet, planetId);
+            const OwnedByData = getComponentValueStrict(OwnedBy, planetId);
+            if (!planetData) continue;
+
+            for (const playerId of allPlayers) {
+                const posData = getComponentValue(Position, playerId);
+                if (!posData) continue;
+                // if (!PlanetAttack(planet.x,planet.y,10,planet.power, playerId)) continue;
+                // start the shooting animation and convert to pixel coordinates
+                const planet = tileCoordToPixelCoord(
+                    { x: planetData.x, y: planetData.y },
+                    TILE_WIDTH,
+                    TILE_HEIGHT
+                );
+
+                // end the shooting animation and convert to pixel coordinates
+                const player = tileCoordToPixelCoord(
+                    { x: posData.x, y: posData.y },
+                    TILE_WIDTH,
+                    TILE_HEIGHT
+                );
+                const dx =planetData.x > posData.x ? planetData.x - posData.x : posData.x - planetData.x;
+                const dy = planetData.y > posData.y ? planetData.y - posData.y : posData.y - planetData.y;
+                if (!(dx + dy  <= 10)) continue;
+                if (OwnedByData.PlayerId == playerId) continue; // Skip if the planet is owned by the player
+                // Create the shooting sprite at the start position
+                const shooting = phaserScene.add.sprite(planet.x, planet.y, 'bomb',0);
+                shooting.setDepth(10);
+
+                // Play the shooting animation
+                const tw = phaserScene.tweens.add({
+                    targets: shooting,
+                    x: player.x+ TILE_WIDTH / 2, // Adjust to center the sprite
+                    y: player.y+ TILE_HEIGHT / 2, // Adjust to center the sprite
+                    duration: 1000,
+                    ease: 'Linear',
+                    onComplete: () => {
+                        shooting.play('planet_shooting');
+                        shooting.once('animationcomplete-planet_shooting', () => {
+                            shooting.destroy();
+                        });
+                        PlanetAttack(planetData.x,planetData.y,9,planetData.power, playerId);
+                        // spawnImpactEffect(phaserScene, player.x, player.y, 'bomb');
+                    },
+                });
+
+                // On complete of the tween, play the explosion animation
+                // tw.on('complete', () => {
+                //     shooting.destroy();
+                //     spawnImpactEffect(phaserScene, end.x, end.y,'bomb');
+                // });
+                
+            }
+        }
+        // Define the system when planet was conquered by the player
+
+
+        
+        // createUISystem(layer);
+            // }
+        // }
     });
 }

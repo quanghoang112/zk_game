@@ -8,9 +8,9 @@ import { createOpponentSystem } from "./createOpponentSystem";
 
 export const registerSystems = (layer: PhaserLayer) => {
     createMapSystem(layer);
-    // createPlanetSystem(layer);
+    createPlanetSystem(layer);
     createDebugSystem(layer);
     createPlayerSystem(layer);
     createUISystem(layer);
-    createOpponentSystem(layer);
+    // createOpponentSystem(layer);
 };
