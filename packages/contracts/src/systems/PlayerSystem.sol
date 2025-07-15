@@ -39,7 +39,7 @@ contract PlayerSystem is System {
     bytes32 _id = addressToEntity(_msgSender());
 
     IsDead.setIsDead(_id, true); // Set player as dead
-    Stats.deleteRecord(_id); // Set player's energy to 0
+    Stats.setEnergy(_id, 0); // Set player's energy to 0
     Position.deleteRecord(_id); // Remove player from the game
     
   }

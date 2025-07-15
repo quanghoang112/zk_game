@@ -1,7 +1,7 @@
 import { PhaserLayer } from "../createPhaserLayer";
 import { TILE_WIDTH, TILE_HEIGHT } from "../constants";
 import { tileCoordToPixelCoord } from "@latticexyz/phaserx";
-import {isThePlayer} from "../utils";
+import {localPlayer} from "../utils";
 import {
     Has,
     defineEnterSystem,
@@ -10,6 +10,7 @@ import {
     defineSystem,
     getComponentValueStrict,
     getComponentValue,
+    defineComponentSystem,
 } from "@latticexyz/recs";
 
 
@@ -72,9 +73,31 @@ export function createPlanetSystem(layer: PhaserLayer) {
         });
     });
 
+    // Draw the affected area
+    const circle = phaserScene.add.circle(
+        0,
+        0,
+        undefined, // Radius will be set later
+        undefined, // Fill color will be set later
+        undefined // Alpha will be set later
+    );
+
+    // Draw outline
+    const outline = phaserScene.add.graphics();
+
+
+    // color of planet
+
 
     defineEnterSystem(world, [Has(Planet)], ({ entity }) => {
-        
+        const OwnedByData = getComponentValueStrict(OwnedBy, entity);
+        const localPlayerEntity = localPlayer(layer);
+        let colorPlanet: number=0xff0000; // Red for unowned planets or enemy's planets
+        if(OwnedByData.PlayerId == localPlayerEntity)
+        {
+            colorPlanet=0x0000ff; // blue for owned planets by the local player
+        }
+
         phaserScene.load.once("complete", () => {
             const planetData = getComponentValueStrict(Planet, entity);
             
@@ -90,20 +113,12 @@ export function createPlanetSystem(layer: PhaserLayer) {
             );
             firePlanetSprite.play("fire_planet_spin");
 
-            // Draw the affected area
-            const circle = phaserScene.add.circle(
-                0,
-                0,
-                planetData.radius,
-                0xff0000,
-                0.1
-            );
-
-            // Draw outline
-            const outline = phaserScene.add.graphics();
-            outline.lineStyle(3, 0xff0000, 0.7);
+            // Affected area
+            circle.setRadius(planetData.radius);
+            circle.setFillStyle(colorPlanet, 0.1); // Set fill color and alpha
+            // outline
+            outline.lineStyle(3, colorPlanet, 0.7);
             outline.strokeCircle(0, 0, planetData.radius);
-
             // Area container
             phaserScene.add.container(pos.x, pos.y, [circle, outline]);
         });
@@ -172,35 +187,45 @@ export function createPlanetSystem(layer: PhaserLayer) {
                 
             }
         }
-        // Define the system when planet was conquered by the player
-        // defineUpdateSystem(world, [Has(OwnedBy)], ({ entity }) => {
-        //     const planet = getComponentValueStrict(Planet, entity);
-        //     if (!planet) return;
-
-        //     const localPlayerEntity = layer.networkLayer.network.playerEntity;  // ID của player local
-
-        //     const planetObj = objectPool.get(entity, "Sprite");
-
-        //     planetObj.setComponent({
-        //         id: "sprite",
-        //         once: (sprite) => {
-        //         const isOwner = planet.owner === localPlayerEntity;
-
-        //         // Chọn màu theo quyền sở hữu
-        //         const texture = isOwner ? "planet_blue" : "planet_red";  // assetKey
-        //         sprite.setTexture(texture);
-        //         sprite.setDepth(1);
-        //         sprite.setPosition(
-        //             planet.x * TILE_WIDTH + TILE_WIDTH / 2,
-        //             planet.y * TILE_HEIGHT + TILE_HEIGHT / 2
-        //         );
-        //         },
-        //     });
-        // });
-
-        
         // createUISystem(layer);
             // }
         // }
     });
+
+    // Define the system when planet was conquered by the player
+    defineUpdateSystem(world, [Has(OwnedBy)], ({ entity }) => {
+        const OwnedByData = getComponentValueStrict(OwnedBy, entity);
+        if (!OwnedBy) return;
+
+        const planetData = getComponentValueStrict(Planet, entity);
+        const localPlayerEntity = localPlayer(layer);
+
+        if(OwnedByData.PlayerId != localPlayerEntity) return; // Chỉ xử lý nếu người chơi là người sở hữu hành tinh
+        // if(OwnedByData.PlayerId=='') return;
+
+        const pos = tileCoordToPixelCoord(
+            { x: planetData.x, y: planetData.y },
+            TILE_WIDTH,
+            TILE_HEIGHT
+        );
+        // Draw the affected area
+        circle.setRadius(planetData.radius);
+        circle.setFillStyle(0x0000ff, 0.1);
+
+        // Draw outline
+        outline.lineStyle(3, 0x0000ff, 0.7);
+        outline.strokeCircle(0, 0, planetData.radius);
+
+        // Area container
+        phaserScene.add.container(pos.x, pos.y, [circle, outline]);
+        // phaserScene.
+        //testing 
+        // const rand= Math.floor(Math.random() * 6)*10;
+        // phaserScene.add
+        // .image(200+rand, 200+rand, 'flag')
+        // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+        // .setDepth(5)
+        // .setScale(0.2); // Tỉ lệ của hình ảnh
+    });
+
 }

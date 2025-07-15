@@ -13,3 +13,15 @@ export const isThePlayer = (entity: Entity, layer: PhaserLayer): boolean => {
         )
     );
 };
+
+
+export const localPlayer = (layer: PhaserLayer): `0x${string}` => {
+    return (
+        keccak256(
+            encodePacked(
+                ["address"],
+                [layer.networkLayer.network.walletClient.account.address]
+            )
+        )
+    );
+};

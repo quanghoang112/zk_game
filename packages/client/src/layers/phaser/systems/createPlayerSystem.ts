@@ -18,6 +18,7 @@ import {
     defineUpdateSystem,
     getComponentValueStrict,
     getComponentValue,
+    defineSystem,
 } from "@latticexyz/recs";
 
 const getRandomInt = (min: number, max: number): number => {
@@ -258,13 +259,13 @@ export function createPlayerSystem(layer: PhaserLayer) {
                         const dy = planetData.y > posData.y ? planetData.y - posData.y : posData.y - planetData.y;
                         if (!(dx + dy  <= 15)) continue;
                         // animate the attack
-                        const rand= Math.floor(Math.random() * 6)*10;
-                        phaserScene.add
-                        .image(200+rand, 200+rand, 'flag')
-                        .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
-                        .setDepth(5)
-                        .setScale(0.2); // Tỉ lệ của hình ảnh
-                        //
+                        // const rand= Math.floor(Math.random() * 6)*10;
+                        // phaserScene.add
+                        // .image(200+rand, 200+rand, 'flag')
+                        // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+                        // .setDepth(5)
+                        // .setScale(0.2); // Tỉ lệ của hình ảnh
+                        // //
                         PlayerAttack(planetId);
                     }
                 });

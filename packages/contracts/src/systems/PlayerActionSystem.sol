@@ -12,7 +12,7 @@ contract PlayerActionSystem is System {
 
         PositionData memory player = Position.get(playerId);
         StatsData memory stats = Stats.get(playerId);
-        require(stats.energy > 5, "not enough energy to attack");
+        require(stats.energy > 25, "not enough energy to attack");
         Stats.setEnergy(playerId, stats.energy - 5); // Decrease player's energy by 5
         uint256 rand = uint256(
             keccak256(
@@ -24,9 +24,14 @@ contract PlayerActionSystem is System {
             OwnedBy.setPlayerId(planetId, playerId);
             // Stats.set(planetId, 0, 0); // Initialize planet stats
         }
-        else if (rand%2 == 0 && stats.energy > 20)// Player already owns the planet
+        else if (OwnedBy.getPlayerId(planetId) == playerId)// Player already owns the planet
+        {
+            // Do nothing, player already owns the planet
+        }
+        else if (rand % 2 == 1)// Player wins the battle
         {
             OwnedBy.setPlayerId(planetId, playerId);
+            // Stats.setEnergy(playerId, stats.energy - 20); // Decrease player's energy by 20
         }
         else//player lose
         {
