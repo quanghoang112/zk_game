@@ -9,8 +9,8 @@ template commitmentHasher() {
     signal output commitment;
     component poseidonComponent;
     poseidonComponent = Poseidon(2);
-    poseidonComponent.inputs[0] <== coin_A;
-    poseidonComponent.inputs[1] <== coin_B;
+    poseidonComponent.inputs[0] <== coin_Attacker;
+    poseidonComponent.inputs[1] <== coin_Defender;
     commitment <== poseidonComponent.out;
 }
 
