@@ -62,5 +62,12 @@ export default defineWorld({
       },
       key: ["id"],
     },
+    ZKState: {
+      schema: {
+        bombsCommitment: "uint32",
+        circomVerifier: "bytes32",
+      },
+      key: [],
+    },
   },
 });
