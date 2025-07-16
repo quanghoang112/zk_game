@@ -199,8 +199,10 @@ export function createPlanetSystem(layer: PhaserLayer) {
 
         const planetData = getComponentValueStrict(Planet, entity);
         const localPlayerEntity = localPlayer(layer);
+        let FillColor: number = 0xff0000; // Red for unowned planets or enemy's planets
 
-        if(OwnedByData.PlayerId != localPlayerEntity) return; // Chỉ xử lý nếu người chơi là người sở hữu hành tinh
+        if(OwnedByData.PlayerId == localPlayerEntity)
+            FillColor=0x0000ff; // Blue for owned planets by the local player
         // if(OwnedByData.PlayerId=='') return;
 
         const pos = tileCoordToPixelCoord(
@@ -210,10 +212,10 @@ export function createPlanetSystem(layer: PhaserLayer) {
         );
         // Draw the affected area
         circle.setRadius(planetData.radius);
-        circle.setFillStyle(0x0000ff, 0.1);
+        circle.setFillStyle(FillColor, 0.1);
 
         // Draw outline
-        outline.lineStyle(3, 0x0000ff, 0.7);
+        outline.lineStyle(3, FillColor, 0.7);
         outline.strokeCircle(0, 0, planetData.radius);
 
         // Area container
