@@ -6,7 +6,7 @@ import {
     Direction,
     MAP_CONFIG,
 } from "../constants";
-import { isThePlayer } from "../utils";
+import { isThePlayer, localPlayer, stringToEntity } from "../utils";
 import {
     tileCoordToPixelCoord,
     pixelCoordToTileCoord,
@@ -19,6 +19,7 @@ import {
     getComponentValueStrict,
     getComponentValue,
     defineSystem,
+    getComponentEntities,
 } from "@latticexyz/recs";
 
 const getRandomInt = (min: number, max: number): number => {
@@ -37,7 +38,7 @@ export function createPlayerSystem(layer: PhaserLayer) {
     const {
         world,
         networkLayer: {
-            components: { Position,Planet,Stats,IsDead },
+            components: { Position,Planet,Stats,IsDead, OwnedBy },
             systemCalls: { spawn, death, move,PlayerAttack },
         },
         scenes: {
@@ -223,59 +224,142 @@ export function createPlayerSystem(layer: PhaserLayer) {
         }
     });
 
-    // Define when a player attacks a planet
-    // defineUpdateSystem(world, [Has(Stats)], ({ entity }) => {
+    // Option 1:Define when a player attacks a planet - Not implement ZK proof yet
+    // input.keyboard$.subscribe(async (key: Phaser.Input.Keyboard.Key) => {
+    //     if (key.isDown && key.keyCode === 65) // 'A' key for attack
+    //     try {
+    //         // // testing
+    //         // const rand= Math.floor(Math.random() * 6)*10;
+    //         // phaserScene.add
+    //         // .image(200+rand, 200+rand, 'flag')
+    //         // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+    //         // .setDepth(5)
+    //         // .setScale(0.2); // Tỉ lệ của hình ảnh
+    //             defineEnterSystem(world, [Has(Stats)], ({ entity }) => {
+    //                 const planet = [...Planet.entities()];
+    //                 for (const planetId of planet) {
+    //                     const planetData = getComponentValueStrict(Planet, planetId);
+    //                     const posData = getComponentValue(Position, entity);
+    //                     if (!posData) continue;
+    //                     // if (!PlanetAttack(planet.x,planet.y,10,planet.power, playerId)) continue;
+    //                     // start the shooting animation and convert to pixel coordinates
+    //                     const planet = tileCoordToPixelCoord(
+    //                         { x: planetData.x, y: planetData.y },
+    //                         TILE_WIDTH,
+    //                         TILE_HEIGHT
+    //                     );
+
+    //                     // end the shooting animation and convert to pixel coordinates
+    //                     const player = tileCoordToPixelCoord(
+    //                         { x: posData.x, y: posData.y },
+    //                         TILE_WIDTH,
+    //                         TILE_HEIGHT
+    //                     );
+    //                     const dx =planetData.x > posData.x ? planetData.x - posData.x : posData.x - planetData.x;
+    //                     const dy = planetData.y > posData.y ? planetData.y - posData.y : posData.y - planetData.y;
+    //                     if (!(dx + dy  <= 15)) continue;
+    //                     // animate the attack
+    //                     // const rand= Math.floor(Math.random() * 6)*10;
+    //                     // phaserScene.add
+    //                     // .image(200+rand, 200+rand, 'flag')
+    //                     // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+    //                     // .setDepth(5)
+    //                     // .setScale(0.2); // Tỉ lệ của hình ảnh
+    //                     // //
+    //                     PlayerAttack(planetId);
+    //                 }
+    //             });
+    //         }
+    //         catch (error) {
+    //             console.log("Error: Cannot attack, ", error);
+    //         }
+
+    //     });
+
+
+    // Option 2: Define when a player attacks a planet - Implement ZK proof
+
     input.keyboard$.subscribe(async (key: Phaser.Input.Keyboard.Key) => {
         if (key.isDown && key.keyCode === 65) // 'A' key for attack
         try {
-            // // testing
-            // const rand= Math.floor(Math.random() * 6)*10;
-            // phaserScene.add
-            // .image(200+rand, 200+rand, 'flag')
-            // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
-            // .setDepth(5)
-            // .setScale(0.2); // Tỉ lệ của hình ảnh
-                defineEnterSystem(world, [Has(Stats)], ({ entity }) => {
-                    const planet = [...Planet.entities()];
-                    for (const planetId of planet) {
-                        const planetData = getComponentValueStrict(Planet, planetId);
-                        const posData = getComponentValue(Position, entity);
-                        if (!posData) continue;
-                        // if (!PlanetAttack(planet.x,planet.y,10,planet.power, playerId)) continue;
-                        // start the shooting animation and convert to pixel coordinates
-                        const planet = tileCoordToPixelCoord(
-                            { x: planetData.x, y: planetData.y },
-                            TILE_WIDTH,
-                            TILE_HEIGHT
-                        );
+             // Lấy entity của người chơi hiện tại
+            const playerId = localPlayer(layer);
+            if (!playerId) return;
 
-                        // end the shooting animation and convert to pixel coordinates
-                        const player = tileCoordToPixelCoord(
-                            { x: posData.x, y: posData.y },
-                            TILE_WIDTH,
-                            TILE_HEIGHT
-                        );
-                        const dx =planetData.x > posData.x ? planetData.x - posData.x : posData.x - planetData.x;
-                        const dy = planetData.y > posData.y ? planetData.y - posData.y : posData.y - planetData.y;
-                        if (!(dx + dy  <= 15)) continue;
-                        // animate the attack
-                        // const rand= Math.floor(Math.random() * 6)*10;
-                        // phaserScene.add
-                        // .image(200+rand, 200+rand, 'flag')
-                        // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
-                        // .setDepth(5)
-                        // .setScale(0.2); // Tỉ lệ của hình ảnh
-                        // //
-                        PlayerAttack(planetId);
+
+            const playerEntity = stringToEntity(playerId);
+            // Lấy stats của attacker
+            const stats = getComponentValueStrict(Stats, playerEntity);
+            const posData = getComponentValue(Position, playerEntity);
+            if (!stats || !posData) return;
+
+            // Tìm các hành tinh trong phạm vi tấn công
+            const planets = [...Planet.entities()];
+            for (const planetId of planets) {
+                const planetData = getComponentValueStrict(Planet, planetId);
+                const ownedByData = getComponentValueStrict(OwnedBy, planetId);
+                if (!planetData) continue;
+
+                const dx = Math.abs(planetData.x - posData.x);
+                const dy = Math.abs(planetData.y - posData.y);
+                if (dx + dy > 15) continue;
+                if (ownedByData.PlayerId === playerId) continue; // Không tấn công hành tinh của chính mình
+                // PlayerAttack(planetId);
+                // Nếu hành tinh chưa có chủ, gọi PlayerAttack
+                if (ownedByData.PlayerId === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+                    PlayerAttack(planetId);
+                } 
+                else {
+                    //testing 
+                    
+                    
+                    try{
+                        // const response=await fetch("http://localhost:8080", {
+                        //     method: "POST",
+                        //     headers: { "Content-Type": "application/json" },
+                        //     body: JSON.stringify({ message: "hello" })
+                        // });
+                        // Gửi energy attacker lên server prover
+                        const response = await fetch("http://localhost:8080", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                attacker: playerId,
+                                energy: stats.energy,
+                                x: posData.x,
+                                y: posData.y,
+                                planetId: planetId
+                            })
+                        });
                     }
-                });
+                    catch (error) {
+                        //testing
+                        // console.log("Error: Cannot attack, ", error);
+                        alert("Lỗi gửi request: " + error);
+                        console.log("Error: Cannot attack, ", error);
+                        const rand1= Math.floor(Math.random() * 6)*10;
+                        phaserScene.add
+                        .image(200+rand1, 200+rand1, 'flag')
+                        .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+                        .setDepth(5)
+                        .setScale(0.2); // Tỉ lệ của hình ảnh
+                        continue;
+                    }
+                    //testing
+                    // const rand1= Math.floor(Math.random() * 10)*10;
+                    // phaserScene.add
+                    // .image(200+rand, 200+rand1, 'flag')
+                    // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+                    // .setDepth(5)
+                    // .setScale(0.2); // Tỉ lệ của hình ảnh
+                }
+            }
             }
             catch (error) {
                 console.log("Error: Cannot attack, ", error);
             }
 
         });
-
     
     
 }

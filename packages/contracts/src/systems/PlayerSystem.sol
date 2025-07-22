@@ -50,6 +50,7 @@ contract PlayerSystem is System {
 
     // Check if the player has enough energy
     uint32 _energy = Stats.getEnergy(_id);
+    uint16 _health = Stats.getHealth(_id);
     if (_energy < 1) return;
 
     PositionData memory _pos = Position.get(_id);
@@ -69,8 +70,12 @@ contract PlayerSystem is System {
     ) return;
 
     // Moving
-    Stats.setEnergy(_id, _energy - 1);
+    // Stats.setEnergy(_id, _energy-1);
+    // Stats.set(_id, _energy - 1, _health); // Update the player's energy and health
+    Stats.set(_id, _health, _energy-1);
+    // (_id, _energy - 1,_health);
     Position.set(_id, _new_pos.x, _new_pos.y);
+
   }
 
   // function attack(bytes32 _opponentId) public {

@@ -5,8 +5,9 @@ pragma solidity >=0.8.24;
 
 import { Position, PositionData } from "./tables/Position.sol";
 import { IsDead } from "./tables/IsDead.sol";
-import { OwnedBy } from "./tables/OwnedBy.sol";
+import { OwnedBy, OwnedByData } from "./tables/OwnedBy.sol";
 import { Stats, StatsData } from "./tables/Stats.sol";
 import { MapConfig, MapConfigData } from "./tables/MapConfig.sol";
 import { Planet, PlanetData } from "./tables/Planet.sol";
 import { Opponent, OpponentData } from "./tables/Opponent.sol";
+import { ZKState, ZKStateData } from "./tables/ZKState.sol";

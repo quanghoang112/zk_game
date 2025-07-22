@@ -25,3 +25,7 @@ export const localPlayer = (layer: PhaserLayer): `0x${string}` => {
         )
     );
 };
+
+export function stringToEntity(id: string): Entity {
+    return id as unknown as Entity;
+}

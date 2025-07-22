@@ -24,7 +24,7 @@ contract PlanetSystem is System {
         require(!_isExisted(id));
 
         Planet.set(id, x, y, radius, power);
-        OwnedBy.set(id, '');
+        OwnedBy.set(id, '1',25); // Initialize the planet's owner to empty
     }
     function PlanetAttack(uint32 x, uint32 y, uint32 radius, uint8 power,bytes32 _playerId) public {
         // bytes32 planetId = _getPlanetID(_msgSender(),salt);

@@ -9,5 +9,14 @@ pragma solidity >=0.8.24;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IPlayerActionSystem {
+  function app__Conqueror(
+    uint[2] calldata _pA,
+    uint[2][2] calldata _pB,
+    uint[2] calldata _pC,
+    uint[2] calldata _pubSignals,
+    bytes32 planetId,
+    bytes32 attacker
+  ) external;
+
   function app__PlayerAttack(bytes32 planetId) external;
 }

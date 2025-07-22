@@ -25,6 +25,7 @@ export default defineWorld({
       schema: {
         PlanetId: "bytes32",
         PlayerId: "bytes32",
+        Value: "uint32",
       },
       key: ["PlanetId"],
     },
@@ -64,8 +65,8 @@ export default defineWorld({
     },
     ZKState: {
       schema: {
-        bombsCommitment: "uint32",
-        circomVerifier: "bytes32",
+        Commitment: "uint32",
+        circomVerifier: "address",
       },
       key: [],
     },

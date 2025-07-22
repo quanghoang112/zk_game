@@ -16,30 +16,29 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-struct OwnedByData {
-  bytes32 PlayerId;
-  uint32 Value;
+struct ZKStateData {
+  uint32 Commitment;
+  address circomVerifier;
 }
 
-library OwnedBy {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "app", name: "OwnedBy", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x746261707000000000000000000000004f776e65644279000000000000000000);
+library ZKState {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "app", name: "ZKState", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746261707000000000000000000000005a4b5374617465000000000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0024020020040000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0018020004140000000000000000000000000000000000000000000000000000);
 
-  // Hex-encoded key schema of (bytes32)
-  Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (bytes32, uint32)
-  Schema constant _valueSchema = Schema.wrap(0x002402005f030000000000000000000000000000000000000000000000000000);
+  // Hex-encoded key schema of ()
+  Schema constant _keySchema = Schema.wrap(0x0000000000000000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint32, address)
+  Schema constant _valueSchema = Schema.wrap(0x0018020003610000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
    * @return keyNames An array of strings with the names of key fields.
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
-    keyNames = new string[](1);
-    keyNames[0] = "PlanetId";
+    keyNames = new string[](0);
   }
 
   /**
@@ -48,8 +47,8 @@ library OwnedBy {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](2);
-    fieldNames[0] = "PlayerId";
-    fieldNames[1] = "Value";
+    fieldNames[0] = "Commitment";
+    fieldNames[1] = "circomVerifier";
   }
 
   /**
@@ -67,95 +66,86 @@ library OwnedBy {
   }
 
   /**
-   * @notice Get PlayerId.
+   * @notice Get Commitment.
    */
-  function getPlayerId(bytes32 PlanetId) internal view returns (bytes32 PlayerId) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function getCommitment() internal view returns (uint32 Commitment) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return (uint32(bytes4(_blob)));
   }
 
   /**
-   * @notice Get PlayerId.
+   * @notice Get Commitment.
    */
-  function _getPlayerId(bytes32 PlanetId) internal view returns (bytes32 PlayerId) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function _getCommitment() internal view returns (uint32 Commitment) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (bytes32(_blob));
+    return (uint32(bytes4(_blob)));
   }
 
   /**
-   * @notice Set PlayerId.
+   * @notice Set Commitment.
    */
-  function setPlayerId(bytes32 PlanetId, bytes32 PlayerId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function setCommitment(uint32 Commitment) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((PlayerId)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((Commitment)), _fieldLayout);
   }
 
   /**
-   * @notice Set PlayerId.
+   * @notice Set Commitment.
    */
-  function _setPlayerId(bytes32 PlanetId, bytes32 PlayerId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function _setCommitment(uint32 Commitment) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((PlayerId)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked((Commitment)), _fieldLayout);
   }
 
   /**
-   * @notice Get Value.
+   * @notice Get circomVerifier.
    */
-  function getValue(bytes32 PlanetId) internal view returns (uint32 Value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function getCircomVerifier() internal view returns (address circomVerifier) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Get Value.
+   * @notice Get circomVerifier.
    */
-  function _getValue(bytes32 PlanetId) internal view returns (uint32 Value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function _getCircomVerifier() internal view returns (address circomVerifier) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint32(bytes4(_blob)));
+    return (address(bytes20(_blob)));
   }
 
   /**
-   * @notice Set Value.
+   * @notice Set circomVerifier.
    */
-  function setValue(bytes32 PlanetId, uint32 Value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function setCircomVerifier(address circomVerifier) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((Value)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((circomVerifier)), _fieldLayout);
   }
 
   /**
-   * @notice Set Value.
+   * @notice Set circomVerifier.
    */
-  function _setValue(bytes32 PlanetId, uint32 Value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function _setCircomVerifier(address circomVerifier) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((Value)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((circomVerifier)), _fieldLayout);
   }
 
   /**
    * @notice Get the full data.
    */
-  function get(bytes32 PlanetId) internal view returns (OwnedByData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function get() internal view returns (ZKStateData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
@@ -168,9 +158,8 @@ library OwnedBy {
   /**
    * @notice Get the full data.
    */
-  function _get(bytes32 PlanetId) internal view returns (OwnedByData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function _get() internal view returns (ZKStateData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
@@ -183,14 +172,13 @@ library OwnedBy {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes32 PlanetId, bytes32 PlayerId, uint32 Value) internal {
-    bytes memory _staticData = encodeStatic(PlayerId, Value);
+  function set(uint32 Commitment, address circomVerifier) internal {
+    bytes memory _staticData = encodeStatic(Commitment, circomVerifier);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -198,14 +186,13 @@ library OwnedBy {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes32 PlanetId, bytes32 PlayerId, uint32 Value) internal {
-    bytes memory _staticData = encodeStatic(PlayerId, Value);
+  function _set(uint32 Commitment, address circomVerifier) internal {
+    bytes memory _staticData = encodeStatic(Commitment, circomVerifier);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -213,14 +200,13 @@ library OwnedBy {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(bytes32 PlanetId, OwnedByData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.PlayerId, _table.Value);
+  function set(ZKStateData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.Commitment, _table.circomVerifier);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -228,14 +214,13 @@ library OwnedBy {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(bytes32 PlanetId, OwnedByData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.PlayerId, _table.Value);
+  function _set(ZKStateData memory _table) internal {
+    bytes memory _staticData = encodeStatic(_table.Commitment, _table.circomVerifier);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -243,10 +228,10 @@ library OwnedBy {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (bytes32 PlayerId, uint32 Value) {
-    PlayerId = (Bytes.getBytes32(_blob, 0));
+  function decodeStatic(bytes memory _blob) internal pure returns (uint32 Commitment, address circomVerifier) {
+    Commitment = (uint32(Bytes.getBytes4(_blob, 0)));
 
-    Value = (uint32(Bytes.getBytes4(_blob, 32)));
+    circomVerifier = (address(Bytes.getBytes20(_blob, 4)));
   }
 
   /**
@@ -259,16 +244,15 @@ library OwnedBy {
     bytes memory _staticData,
     EncodedLengths,
     bytes memory
-  ) internal pure returns (OwnedByData memory _table) {
-    (_table.PlayerId, _table.Value) = decodeStatic(_staticData);
+  ) internal pure returns (ZKStateData memory _table) {
+    (_table.Commitment, _table.circomVerifier) = decodeStatic(_staticData);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(bytes32 PlanetId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function deleteRecord() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -276,9 +260,8 @@ library OwnedBy {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(bytes32 PlanetId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function _deleteRecord() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -287,8 +270,8 @@ library OwnedBy {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(bytes32 PlayerId, uint32 Value) internal pure returns (bytes memory) {
-    return abi.encodePacked(PlayerId, Value);
+  function encodeStatic(uint32 Commitment, address circomVerifier) internal pure returns (bytes memory) {
+    return abi.encodePacked(Commitment, circomVerifier);
   }
 
   /**
@@ -297,8 +280,11 @@ library OwnedBy {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(bytes32 PlayerId, uint32 Value) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(PlayerId, Value);
+  function encode(
+    uint32 Commitment,
+    address circomVerifier
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
+    bytes memory _staticData = encodeStatic(Commitment, circomVerifier);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -309,9 +295,8 @@ library OwnedBy {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(bytes32 PlanetId) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = PlanetId;
+  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
     return _keyTuple;
   }
