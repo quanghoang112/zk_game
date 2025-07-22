@@ -67,17 +67,8 @@ function decodeOwnedBy(hexString) {
     return {playerIdHex, valueInt};
 }
 
-//
+//Create Cache for OwnedBy table
 const OwnedByCache = new Map(); //
-
-// contractWorld.on("Store_SetRecord", async (tableId, keyTuple, staticData, encodedLengths, dynamicData) => {
-//     if (tableId === Stats) {
-//         let decodedRecord = decodeStats(staticData);
-//         let player = '0x' + keyTuple[0].replace(/^0x000000000000000000000000/, '');
-//         console.log(`Player: ${player}, Health: ${decodedRecord.Health}, Energy: ${decodedRecord.Energy}`);
-//         // await OwnedByCache.set(planetId, { playerId: decodedOwnedByData.playerIdHex, value: decodedOwnedByData.valueInt });
-//   }
-// });
 
 contractWorld.on("Store_SetRecord", async (tableId, keyTuple, staticData, encodedLengths, dynamicData) => {
     if (tableId === OwnedBy) {
@@ -90,84 +81,8 @@ contractWorld.on("Store_SetRecord", async (tableId, keyTuple, staticData, encode
   }
 });
 
-// contractWorld.on("Store_SetRecord", async (tableId, keyTuple, staticData, encodedLengths, dynamicData) => {
-//     if(tableId == playerTableId)
-//     {
-//         let decodedRecord = decodeRecord(staticData);
-//         let player = '0x' + keyTuple[0].replace(/^0x000000000000000000000000/, '');
-//         console.log(`Player: ${player}, X: ${decodedRecord.x}, Y: ${decodedRecord.y}`);
-
-//         if(decodedRecord.x>0)
-//         {
-//             // await getPlanetOwner(decodedRecord.x, decodedRecord.y);
-//         }
-//     }
-// });
-
-async function getPlanetOwner(health, energy) {
-  console.log(`Health: ${health}, Energy: ${energy}`);
-}
-
-// contractWorld.on("Store_SetRecord", async (tableId, keyTuple, staticData, encodedLengths, dynamicData) => {
-//     if(tableId == playerTableId)
-//     {
-//         let decodedOwnedBy = decodeOwnedBy(staticData);
-//         let playerId = '0x' + decodeOwnedBy.playerIdHex;
-//         let planet = '0x' + keyTuple[0].replace(/^0x000000000000000000000000/, '');
-
-//         // if(!decodedRecord.isDead)
-//         // {
-//             await conqueror(planet,playerId);
-//         // }
-//     }
-// });
 
 
-// // Idea: in PlayerId column, we convert from '' to 'onAttack' when the player is attacking (systemccall),
-// // below, when planet 'onAttack' is updated, we call verify proof and update the planet's status
-// async function conqueror(planet,player) {
-//     // console.log(`Player move to (${x}, ${y})`);
-//     for (const bomb of bombPositions) {
-//         if (""+bomb.x === ""+x && ""+bomb.y === ""+y) {
-//             try {
-//                 const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-//                     {
-//                         bomb1_x: bombPositions[0].x,
-//                         bomb1_y: bombPositions[0].y,
-//                         bomb2_x: bombPositions[1].x,
-//                         bomb2_y: bombPositions[1].y,
-//                         bomb3_x: bombPositions[2].x,
-//                         bomb3_y: bombPositions[2].y,
-//                         player_x: x,
-//                         player_y: y
-//                     },
-//                     "./zk_artifacts/conqueror.wasm",
-//                     "./zk_artifacts/conqueror_final.zkey"
-//                 );
-
-//                 let pA = proof.pi_a;
-//                 pA.pop();
-//                 let pB = proof.pi_b;
-//                 pB.pop();
-//                 let pC = proof.pi_c;
-//                 pC.pop();
-
-//                 if (publicSignals[1] == "1") {
-//                     const tx = await contractWorld.app__detonateBomb(
-//                         pA,
-//                         pB,
-//                         pC,
-//                         publicSignals,
-//                         player
-//                     );
-//                     console.log('Transaction:', tx);
-//                 }
-//             } catch (error) {
-//                 console.error("Error generating or verifying proof:", error);
-//             }
-//         }
-//     }
-// }
 
 
 
