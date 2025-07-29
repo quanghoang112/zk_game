@@ -178,18 +178,9 @@ export function createPlanetSystem(layer: PhaserLayer) {
                         // spawnImpactEffect(phaserScene, player.x, player.y, 'bomb');
                     },
                 });
-
-                // On complete of the tween, play the explosion animation
-                // tw.on('complete', () => {
-                //     shooting.destroy();
-                //     spawnImpactEffect(phaserScene, end.x, end.y,'bomb');
-                // });
                 
             }
         }
-        // createUISystem(layer);
-            // }
-        // }
     });
 
     // Define the system when planet was conquered by the player

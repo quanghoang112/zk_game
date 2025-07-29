@@ -15,8 +15,8 @@ export function createSystemCalls(
         await waitForTransaction(tx);
     };
 
-    const death = async () => {
-        const tx = await worldContract.write.app__death();
+    const death = async (playerId: string) => {
+        const tx = await worldContract.write.app__death([playerId as `0x${string}`]);
         await waitForTransaction(tx);
     };
 

@@ -13,7 +13,7 @@ import { Direction } from "../common.sol";
 interface IPlayerSystem {
   function app__spawn(uint32 x, uint32 y) external;
 
-  function app__death() external;
+  function app__death(bytes32 playerId) external;
 
   function app__move(Direction moveDir) external;
 }

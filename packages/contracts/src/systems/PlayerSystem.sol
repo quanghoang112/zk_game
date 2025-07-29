@@ -31,16 +31,17 @@ contract PlayerSystem is System {
     }
   }
 
-  function death() public {
+  function death(bytes32 playerId) public {
     // Ensure the spawn position is valid
     // require(_isValidPosition(x, y));
 
     // Check if the player exists
     bytes32 _id = addressToEntity(_msgSender());
 
-    IsDead.setIsDead(_id, true); // Set player as dead
-    Stats.setEnergy(_id, 0); // Set player's energy to 0
-    Position.deleteRecord(_id); // Remove player from the game
+    IsDead.set(playerId, true); // Set player as dead
+    Stats.setEnergy(playerId, 0); // Set player's energy to 0
+    // Position.set(playerId,0,0);
+    // Position.deleteRecord(_id); // Remove player from the game
     
   }
 

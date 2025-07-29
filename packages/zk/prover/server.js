@@ -116,11 +116,13 @@ app.post("/", async (req, res) => {
     let ownerData = OwnedByCache.get(planetId);
     let energy_owner = ownerData ? ownerData.value : 0;
     console.log(`Energy of owner: ${energy_owner}`);
-    console.log("energy:", energy_owner, typeof energy_owner);
+    // console.log("energy:", energy_owner, typeof energy_owner);
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
       {
-        coin_Attacker: 75, //Need to be replaced with actual energy of attacker
-        coin_Defender: 60, //Need to be replaced with actual energy of defender
+        // coin_Attacker: 80, //Need to be replaced with actual energy of attacker
+        // coin_Defender: 40, //Need to be replaced with actual energy of defender
+        coin_Attacker: energy,
+        coin_Defender: energy_owner,
       },
       "./zk_artifacts/conqueror.wasm",
       "./zk_artifacts/conqueror_final.zkey"

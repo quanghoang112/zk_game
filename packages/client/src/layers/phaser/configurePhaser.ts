@@ -7,7 +7,7 @@ import {
     defineCameraConfig,
 } from "@latticexyz/phaserx";
 import worldTileset from "/assets/tilesets/spaces_debug.png";
-import { TileAnimations, Tileset } from "../../artTypes/spaces_debug";
+import { TileAnimations, Tileset, } from "../../artTypes/spaces_debug";
 import {
     Sprites,
     Assets,
@@ -15,7 +15,7 @@ import {
     Scenes,
     TILE_HEIGHT,
     TILE_WIDTH,
-    // Animations,
+    Animations,
 } from "./constants";
 
 const ANIMATION_INTERVAL = 200;
@@ -65,7 +65,28 @@ export const phaserConfig = {
                     frame: "sprites/space_ship/idle/0.png",
                 },
             },
-            animations: [],
+            animations: [
+                {
+                    key: Animations.Explosions,
+                    assetKey: Assets.MainAtlas,
+                    startFrame: 1,
+                    endFrame: 10,
+                    frameRate: 20,
+                    repeat: -1,
+                    prefix: "sprites/explosion/",
+                    suffix: ".png",
+                },
+                {
+                    key: Animations.Ship,
+                    assetKey: Assets.MainAtlas,
+                    startFrame: 1,
+                    endFrame: 1,
+                    frameRate: 20,
+                    repeat: -1,
+                    prefix: "sprites/space_ship/idle/",
+                    suffix: ".png",
+                }
+            ],
             tilesets: {
                 Default: {
                     assetKey: Assets.Tileset,

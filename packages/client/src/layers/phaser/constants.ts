@@ -8,6 +8,8 @@ export enum Maps {
 
 export enum Animations {
     RotatingPlanet = "RotatingPlanet",
+    Explosions = "Explosions",
+    Ship = "Ship",
 }
 export enum Sprites {
     SpaceShip,
@@ -28,6 +30,7 @@ export enum Direction {
 
 export const TILE_HEIGHT = 64;
 export const TILE_WIDTH = 64;
+export const TILE_SIZE = 64;
 export const CHUNK_SIZE = 64 * 16;
 export const CHUNK_TILES = 16;
 export const MAP_CONFIG = {

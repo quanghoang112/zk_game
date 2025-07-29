@@ -27,7 +27,7 @@ contract PlayerActionSystem is System {
         require(result==1, "Attacker win the battle");
 
         uint32 EnergyCommitment = ZKState.getCommitment();
-        require(uint32(uint(commitment)) == EnergyCommitment, "Invalid commitment");
+        // require(uint32(uint(commitment)) == EnergyCommitment, "Invalid commitment");
         uint32 value = OwnedBy.getValue(planetId);
 
         OwnedBy.set(planetId, attacker,value+10); // Set the planet's owner to the attacker
