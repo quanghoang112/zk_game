@@ -19,11 +19,15 @@ const PORT = 8080;
 const provider = new ethers.JsonRpcProvider('http://localhost:8545');
 const contractABI = [
     "function Conqueror(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[2] calldata _pubSignals,bytes32 planetId, bytes32 attacker)",
+    "function AttackPlayer(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[4] calldata _pubSignals)",
+    "function BeHitted(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[4] calldata _pubSignals, bytes32 beHitted)",
 ];
 
 const contractABIWorld = [
     "event Store_SetRecord(bytes32 indexed tableId, bytes32[] keyTuple, bytes staticData, bytes32 encodedLengths, bytes dynamicData)",
-    "function app__Conqueror(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[2] calldata _pubSignals,bytes32 planetId, bytes32 attacker)"
+    "function app__Conqueror(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[2] calldata _pubSignals,bytes32 planetId, bytes32 attacker)",
+    "function app__AttackPlayer(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[4] calldata _pubSignals)",
+    "function app__BeHitted(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[4] calldata _pubSignals, bytes32 beHitted)",
 ];
 // function Conqueror(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[2] calldata _pubSignals,bytes32 planetId, bytes32 attacker)
 // Conqueror(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[2] calldata _pubSignals, bytes32 planetId, bytes32 attacker)
@@ -101,7 +105,7 @@ app.use(express.json());
 //   res.send("Received!");
 // });
 
-app.post("/", async (req, res) => {
+app.post("/attack", async (req, res) => {
   console.log("🔥 Đã nhận request POST /", req.body);
   // res.send('Server is receiving requests');
   const { attacker, x, y, energy, planetId } = req.body;
