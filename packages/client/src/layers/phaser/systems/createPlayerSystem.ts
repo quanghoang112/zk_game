@@ -419,13 +419,8 @@ export function createPlayerSystem(layer: PhaserLayer) {
                     
                     
                     try{
-                        // const response=await fetch("http://localhost:8080", {
-                        //     method: "POST",
-                        //     headers: { "Content-Type": "application/json" },
-                        //     body: JSON.stringify({ message: "hello" })
-                        // });
                         // Gửi energy attacker lên server prover
-                        const response = await fetch("http://localhost:8080", {
+                        const response = await fetch("http://localhost:8080/attack", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -442,12 +437,12 @@ export function createPlayerSystem(layer: PhaserLayer) {
                         // console.log("Error: Cannot attack, ", error);
                         alert("Lỗi gửi request: " + error);
                         console.log("Error: Cannot attack, ", error);
-                        const rand1= Math.floor(Math.random() * 6)*10;
-                        phaserScene.add
-                        .image(200+rand1, 200+rand1, 'flag')
-                        .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
-                        .setDepth(5)
-                        .setScale(0.2); // Tỉ lệ của hình ảnh
+                        // const rand1= Math.floor(Math.random() * 6)*10;
+                        // phaserScene.add
+                        // .image(200+rand1, 200+rand1, 'flag')
+                        // .setOrigin(0.5, 1)    // chỗ neo giữa đáy, tuỳ chỉnh
+                        // .setDepth(5)
+                        // .setScale(0.2); // Tỉ lệ của hình ảnh
                         continue;
                     }
                     //testing
@@ -465,42 +460,6 @@ export function createPlayerSystem(layer: PhaserLayer) {
             }
 
         });
-    // support function for player attack player
-    // const  shootBullet = (targetX: number, targetY: number) => {
-    //     const player = localPlayer(layer);
-    //     const playerEntity=stringToEntity(player);
-    //     const pos = getComponentValue(Position, playerEntity);
-    //     if (!pos) return;
-
-    //     // Tạo viên đạn mới
-    //     const bullet = bullets.get(
-    //         pos.x * TILE_SIZE,
-    //         pos.y * TILE_SIZE,
-    //         "bulletTexture"
-    //     ) as Phaser.Physics.Arcade.Image;
-
-    //     if (!bullet) return;
-    //     bullet.setActive(true);
-    //     bullet.setVisible(true);
-
-    //     // Tính vector hướng
-    //     const dx = targetX - bullet.x;
-    //     const dy = targetY - bullet.y;
-    //     const len = Math.sqrt(dx * dx + dy * dy);
-    //     const speed = 400; // pixels/giây
-
-    //     if (!bullet.body) return; 
-    //     bullet.body.reset(bullet.x, bullet.y);
-    //     bullet.setVelocity((dx / len) * speed, (dy / len) * speed);
-
-    //     // Hủy viên đạn sau 2s
-    //     phaserScene.time.delayedCall(2000, () => bullet.destroy());
-    // }
-
-    // const stopAiming = () => {
-    //     isAiming = false;
-    //     guideLine.clear();
-    // }
 
     const create = () => {
         guideTiles=phaserScene.add.graphics();
@@ -574,7 +533,7 @@ export function createPlayerSystem(layer: PhaserLayer) {
 
     createAnim();
 
-    input.pointerdown$.subscribe(({ pointer, event }) => {
+    input.pointerdown$.subscribe(async ({ pointer, event }) => {
         if (pointer.leftButtonDown() && isAiming)
         {
             const player = localPlayer(layer);
@@ -589,10 +548,30 @@ export function createPlayerSystem(layer: PhaserLayer) {
                     TILE_WIDTH,
                     TILE_HEIGHT
                 )
+            }
+                
                 // phaserScene.add.image(pixel.x + TILE_WIDTH / 2,pixel.y + TILE_HEIGHT/2,'explode_0');
                 // const explosion = phaserScene.add.sprite(pixel.x + TILE_WIDTH / 2,pixel.y + TILE_HEIGHT/2, 'explode_0');
                 // explosion.play('explode');
+                // phaserScene.time.
+
+            try{
+                    // Gửi energy attacker lên server prover
+                const response = await fetch("http://localhost:8080/hit", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        list: lastPath,
+                        attacker: player,
+                        attacker_x: positionData.x,
+                        attacker_y: positionData.y,
+                    })
+                });
             }
+            catch (error) {
+                alert("Lỗi gửi request: " + error);
+            }
+            // }
         }
     });
 }

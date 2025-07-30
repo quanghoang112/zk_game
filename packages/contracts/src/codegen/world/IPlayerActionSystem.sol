@@ -19,4 +19,20 @@ interface IPlayerActionSystem {
   ) external;
 
   function app__PlayerAttack(bytes32 planetId) external;
+
+  function app__AttackPlayer(
+    uint[2] calldata _pA,
+    uint[2][2] calldata _pB,
+    uint[2] calldata _pC,
+    uint[4] calldata _pubSignals,
+    bytes32 playerId
+  ) external;
+
+  function app__BeHitted(
+    uint[2] calldata _pA,
+    uint[2][2] calldata _pB,
+    uint[2] calldata _pC,
+    uint[4] calldata _pubSignals,
+    bytes32 beHitted
+  ) external;
 }

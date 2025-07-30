@@ -8,6 +8,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { ZKState } from "../src/codegen/index.sol";
 import { Groth16Verifier } from "../src/CircomVerifier.sol";
+import { Groth16Verifier as Groth16 }  from "../src/CircomVerifierHitPlayer.sol";
 // import{addressToEntity} from"../src/Utils.sol";
 
 contract PostDeploy is Script {
@@ -30,18 +31,20 @@ contract PostDeploy is Script {
     uint32 radius = 500;
     uint8 power = 10;
     IWorld(worldAddress).app__createPlanet(salt, 5, 5, radius, power);
+    // IWorld(worldAddress).app__createPlanet(salt+3, 10, 10, radius, power);
 
     // Create a opponent
     IWorld(worldAddress).app__createOpponent(salt, 7, 7);
 
     // Deploy commitment on-chain so he can't change it later
-    uint32 Commitment = uint32(uint(4561887125970913112567872782541489075583363854823519272033252705402213231374));
-    address circomVerifier = address(new Groth16Verifier());
-    IWorld(worldAddress).app__createZKState(Commitment, circomVerifier);
-    // ZKState.set(Commitment, circomVerifier);
-    // ZKState.setCircomVerifier(circomVerifier);
-    // ZKState.setCommitment(Commitment);
-    // 0x746261707000000000000000000000005a4b5374617465000000000000000000 ZKStateTableId
+    // uint32 Commitment = uint32(uint(4561887125970913112567872782541489075583363854823519272033252705402213231374));
+    // address circomVerifier = address(new Groth16Verifier());
+    // IWorld(worldAddress).app__createZKState(Commitment, circomVerifier);
+    //
+    uint32 CommitmentHit = uint32(uint(2056449770998421094693270621231289260402432781619773239530425938274273592166));
+    address circomVerifierHit = address(new Groth16());
+    IWorld(worldAddress).app__createZKState(CommitmentHit, circomVerifierHit);
+
 
 
 
